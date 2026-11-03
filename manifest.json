@@ -1,0 +1,12 @@
+{
+  "project": "SGLang MiniMax-H3 Simplified Chinese UI overlay",
+  "upstream_repo": "https://github.com/sgl-project/sglang",
+  "upstream_tag": "v0.5.22",
+  "upstream_commit": "35ce313293052f8362e0829e7512bc9bc3d336c9",
+  "source_relative_path": "python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
+  "upstream_sha256": "d140b465872a9f16f658b6dfc92e25e2a98306482b4c9cb6c31c7ebe6a8413a9",
+  "localized_sha256": "063ce2d46bb4fcf4bd378864b20bcd7fab175b579c8d7347d062d1db3901b1f4",
+  "change_scope": "H3 labels, English title, top model/task controls hidden; task via Gradio State",
+  "changes": 17,
+  "release": "v0.5.22-zh3"
+}
