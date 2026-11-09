@@ -5,8 +5,8 @@
   "upstream_commit": "35ce313293052f8362e0829e7512bc9bc3d336c9",
   "source_relative_path": "python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
   "upstream_sha256": "d140b465872a9f16f658b6dfc92e25e2a98306482b4c9cb6c31c7ebe6a8413a9",
-  "localized_sha256": "0c47c8dc8ce979b88ebb5825cb7910c0c874a61dd1a968a3766e7a62f4981acc",
+  "localized_sha256": "587276df6c7abc6b9b02857dd6b3fa16723a99be51a3d3b1b30ff41d3b896d33",
   "change_scope": "H3 Chinese labels, hidden top controls, Ref2VA optional image with transparent fallback",
-  "changes": 25,
+  "changes": 24,
   "release": "v0.5.22-zh4"
 }
