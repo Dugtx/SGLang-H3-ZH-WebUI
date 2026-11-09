@@ -1,80 +1,145 @@
 --- a/python/sglang/multimodal_gen/apps/webui/minimax_h3.py
 +++ b/python/sglang/multimodal_gen/apps/webui/minimax_h3.py
-@@ -209,53 +209,51 @@
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: Apache-2.0
+ 
+ import os
++import tempfile
+ from typing import TYPE_CHECKING, Any
+ from urllib.parse import urlparse
+ 
+@@ -175,6 +176,18 @@
+     profile = minimax_h3_task_profile(tasks[0])
+     sync_scheduler_client.initialize(server_args)
+ 
++    # The checked-in Ref2VA fallback is generated only once when the UI starts.
++    # Keep it as an RGBA PNG; the existing media pipeline owns decoding.
++    transparent_reference = None
++    if "ref2va" in tasks:
++        from PIL import Image
++
++        placeholder_dir = tempfile.mkdtemp(prefix="sglang_h3_ref_")
++        transparent_reference = os.path.join(placeholder_dir, "transparent.png")
++        Image.new("RGBA", (512, 512), (0, 0, 0, 0)).save(
++            transparent_reference, format="PNG"
++        )
++
+     def generate(
+         prompt,
+         task,
+@@ -183,6 +196,7 @@
+         reference_image,
+         reference_video,
+         reference_audio,
++        use_uploaded_reference_image,
+         seed,
+         num_inference_steps,
+         short_edge,
+@@ -191,6 +205,14 @@
+         flow_shift,
+         audio_flow_shift,
+     ):
++        if task == "ref2va":
++            if use_uploaded_reference_image:
++                if not reference_image:
++                    raise gr.Error("已开启图片上传，请先选择参考图片")
++            else:
++                # Ignore any previously uploaded image when the switch is off.
++                reference_image = transparent_reference
++
+         kwargs = build_minimax_h3_sampling_params_kwargs(
+             prompt=prompt,
+             task=task,
+@@ -209,53 +231,65 @@
          )
          return _generate_minimax_h3(server_args, kwargs)
  
--    with gr.Blocks() as demo:
 +    with gr.Blocks(title="SGLang MiniMax H3") as demo:
+-    with gr.Blocks() as demo:
          gr.Markdown("# SGLang MiniMax H3")
++        task = gr.State(value=tasks[0])
++
++        upload_reference_image = gr.Checkbox(
++            label="是否选择上传图片", value=False, visible="ref2va" in tasks
++        )
 -        with gr.Row():
 -            gr.Textbox(label="Model", value=server_args.model_path)
 -            task = gr.Dropdown(choices=list(tasks), value=tasks[0], label="Task")
--
+ 
++        prompt = gr.Textbox(label="提示词（可输入中文）", value="一只好奇的浣熊")
 -        prompt = gr.Textbox(label="Prompt", value="A curious raccoon")
--        with gr.Row():
+         with gr.Row():
++            first_frame = gr.Image(label="首帧关键帧", type="filepath")
++            last_frame = gr.Image(label="尾帧关键帧", type="filepath")
++            reference_image = gr.Image(
++                label="参考图片",
++                type="filepath",
++                visible="ref2va" not in tasks,
++            )
 -            first_frame = gr.Image(label="First keyframe", type="filepath")
 -            last_frame = gr.Image(label="Last keyframe", type="filepath")
 -            reference_image = gr.Image(label="Reference image", type="filepath")
--        with gr.Row():
--            reference_video = gr.Video(label="Reference video")
--            reference_audio = gr.Audio(label="Reference audio", type="filepath")
--            video_out = gr.Video(label="Generated video", include_audio=True)
--
--        with gr.Row():
--            seed = gr.Number(label="Seed", precision=0, value=1234)
-+        task = gr.State(value=tasks[0])
-+
-+        prompt = gr.Textbox(label="提示词（可输入中文）", value="一只好奇的浣熊")
-+        with gr.Row():
-+            first_frame = gr.Image(label="首帧关键帧", type="filepath")
-+            last_frame = gr.Image(label="尾帧关键帧", type="filepath")
-+            reference_image = gr.Image(label="参考图片", type="filepath")
-+        with gr.Row():
+         with gr.Row():
 +            reference_video = gr.Video(label="参考视频")
 +            reference_audio = gr.Audio(label="参考音频", type="filepath")
 +            video_out = gr.Video(label="生成结果（含音频）", include_audio=True)
-+
-+        with gr.Row():
+-            reference_video = gr.Video(label="Reference video")
+-            reference_audio = gr.Audio(label="Reference audio", type="filepath")
+-            video_out = gr.Video(label="Generated video", include_audio=True)
+ 
+         with gr.Row():
 +            seed = gr.Number(label="随机种子", precision=0, value=1234)
+-            seed = gr.Number(label="Seed", precision=0, value=1234)
              num_inference_steps = gr.Slider(
--                minimum=2, maximum=100, value=50, step=1, label="Steps"
 +                minimum=2, maximum=100, value=50, step=1, label="推理步数"
+-                minimum=2, maximum=100, value=50, step=1, label="Steps"
              )
              duration_seconds = gr.Slider(
                  minimum=4.0,
                  maximum=15.0,
                  value=5.0,
                  step=0.5,
--                label="Duration (seconds)",
 +                label="生成时长（秒）",
+-                label="Duration (seconds)",
              )
          with gr.Row():
              short_edge = gr.Number(
--                label="Short edge",
 +                label="短边分辨率",
+-                label="Short edge",
                  value=MINIMAX_H3_RECOMMENDED_SHORT_EDGE,
                  precision=0,
              )
              aspect_ratio = gr.Dropdown(
                  choices=[*MINIMAX_H3_FINITE_ASPECT_RATIOS, "auto"],
                  value="16:9",
--                label="Aspect ratio",
 +                label="画面比例",
+-                label="Aspect ratio",
              )
              flow_shift = gr.Number(
--                label="Video flow shift", value=profile.default_flow_shift
 +                label="视频流偏移", value=profile.default_flow_shift
+-                label="Video flow shift", value=profile.default_flow_shift
              )
              audio_flow_shift = gr.Number(
--                label="Audio flow shift", value=profile.default_audio_flow_shift
--            )
--
--        run_btn = gr.Button("Generate", variant="primary")
 +                label="音频流偏移", value=profile.default_audio_flow_shift
-+            )
+-                label="Audio flow shift", value=profile.default_audio_flow_shift
+             )
+ 
++        upload_reference_image.change(
++            fn=lambda enabled: gr.update(visible=bool(enabled), value=None),
++            inputs=upload_reference_image,
++            outputs=reference_image,
++        )
 +
 +        run_btn = gr.Button("开始生成", variant="primary")
+-        run_btn = gr.Button("Generate", variant="primary")
          run_btn.click(
              fn=generate,
              inputs=[
+@@ -266,6 +300,7 @@
+                 reference_image,
+                 reference_video,
+                 reference_audio,
++                upload_reference_image,
+                 seed,
+                 num_inference_steps,
+                 short_edge,
