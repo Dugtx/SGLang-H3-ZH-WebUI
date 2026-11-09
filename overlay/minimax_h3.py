@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import tempfile
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
@@ -175,6 +176,18 @@ def run_minimax_h3_webui(server_args: "ServerArgs"):
     profile = minimax_h3_task_profile(tasks[0])
     sync_scheduler_client.initialize(server_args)
 
+    # The checked-in Ref2VA fallback is generated only once when the UI starts.
+    # Keep it as an RGBA PNG; the existing media pipeline owns decoding.
+    transparent_reference = None
+    if "ref2va" in tasks:
+        from PIL import Image
+
+        placeholder_dir = tempfile.mkdtemp(prefix="sglang_h3_ref_")
+        transparent_reference = os.path.join(placeholder_dir, "transparent.png")
+        Image.new("RGBA", (512, 512), (0, 0, 0, 0)).save(
+            transparent_reference, format="PNG"
+        )
+
     def generate(
         prompt,
         task,
@@ -183,6 +196,7 @@ def run_minimax_h3_webui(server_args: "ServerArgs"):
         reference_image,
         reference_video,
         reference_audio,
+        use_uploaded_reference_image,
         seed,
         num_inference_steps,
         short_edge,
@@ -191,6 +205,14 @@ def run_minimax_h3_webui(server_args: "ServerArgs"):
         flow_shift,
         audio_flow_shift,
     ):
+        if task == "ref2va":
+            if use_uploaded_reference_image:
+                if not reference_image:
+                    raise gr.Error("已开启图片上传，请先选择参考图片")
+            else:
+                # Ignore any previously uploaded image when the switch is off.
+                reference_image = transparent_reference
+
         kwargs = build_minimax_h3_sampling_params_kwargs(
             prompt=prompt,
             task=task,
@@ -213,11 +235,19 @@ def run_minimax_h3_webui(server_args: "ServerArgs"):
         gr.Markdown("# SGLang MiniMax H3")
         task = gr.State(value=tasks[0])
 
+        upload_reference_image = gr.Checkbox(
+            label="是否选择上传图片", value=False, visible="ref2va" in tasks
+        )
+
         prompt = gr.Textbox(label="提示词（可输入中文）", value="一只好奇的浣熊")
         with gr.Row():
             first_frame = gr.Image(label="首帧关键帧", type="filepath")
             last_frame = gr.Image(label="尾帧关键帧", type="filepath")
-            reference_image = gr.Image(label="参考图片", type="filepath")
+            reference_image = gr.Image(
+                label="参考图片",
+                type="filepath",
+                visible="ref2va" not in tasks,
+            )
         with gr.Row():
             reference_video = gr.Video(label="参考视频")
             reference_audio = gr.Audio(label="参考音频", type="filepath")
@@ -253,6 +283,12 @@ def run_minimax_h3_webui(server_args: "ServerArgs"):
                 label="音频流偏移", value=profile.default_audio_flow_shift
             )
 
+        upload_reference_image.change(
+            fn=lambda enabled: gr.update(visible=bool(enabled), value=None),
+            inputs=upload_reference_image,
+            outputs=reference_image,
+        )
+
         run_btn = gr.Button("开始生成", variant="primary")
         run_btn.click(
             fn=generate,
@@ -264,6 +300,7 @@ def run_minimax_h3_webui(server_args: "ServerArgs"):
                 reference_image,
                 reference_video,
                 reference_audio,
+                upload_reference_image,
                 seed,
                 num_inference_steps,
                 short_edge,
