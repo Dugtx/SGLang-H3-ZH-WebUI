@@ -44,11 +44,15 @@ class LocalizationTests(unittest.TestCase):
                     ast.dump(function(self.b, name), include_attributes=False),
                 )
 
-    def test_generate_callback_unchanged(self):
-        def callback(tree):
-            ui = function(tree, "run_minimax_h3_webui")
-            return next(x for x in ui.body if isinstance(x, ast.FunctionDef) and x.name == "generate")
-        self.assertEqual(ast.dump(callback(self.a)), ast.dump(callback(self.b)))
+    def test_reference_image_switch_and_fallback(self):
+        self.assertIn('label="是否选择上传图片"', self.localized)
+        self.assertIn('value=False, visible="ref2va" in tasks', self.localized)
+        self.assertIn('if task == "ref2va":', self.localized)
+        self.assertIn('if use_uploaded_reference_image:', self.localized)
+        self.assertIn('reference_image = transparent_reference', self.localized)
+        self.assertIn('raise gr.Error("已开启图片上传，请先选择参考图片")', self.localized)
+        self.assertIn('Image.new("RGBA", (512, 512), (0, 0, 0, 0))', self.localized)
+        self.assertIn('visible=bool(enabled), value=None', self.localized)
 
     def test_ui_labels_zh(self):
         labels = []
@@ -59,7 +63,7 @@ class LocalizationTests(unittest.TestCase):
                         labels.append(str(keyword.value.value))
         expected = [
             "提示词（可输入中文）", "首帧关键帧",
-            "尾帧关键帧", "参考图片", "参考视频", "参考音频",
+            "尾帧关键帧", "参考图片", "是否选择上传图片", "参考视频", "参考音频",
             "生成结果（含音频）", "随机种子", "推理步数", "生成时长（秒）",
             "短边分辨率", "画面比例", "视频流偏移", "音频流偏移",
         ]
@@ -82,7 +86,11 @@ class LocalizationTests(unittest.TestCase):
         def clicked(tree):
             return [ast.dump(x) for x in ast.walk(tree) if isinstance(x, ast.Call)
                     and isinstance(x.func, ast.Attribute) and x.func.attr == "click"]
-        self.assertEqual(clicked(ui), clicked(function(self.a, "run_minimax_h3_webui")))
+        self.assertEqual(len(clicked(ui)), 1)
+        self.assertIn('upload_reference_image.change(', self.localized)
+        self.assertIn('upload_reference_image,\n                seed,', self.localized)
+        self.assertIn('fn=generate,', self.localized)
+        self.assertIn('outputs=video_out,', self.localized)
         self.assertIn('task = gr.State(value=tasks[0])', self.localized)
         self.assertNotIn('task = gr.Dropdown(', self.localized)
 
