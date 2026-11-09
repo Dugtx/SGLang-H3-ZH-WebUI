@@ -1,27 +1,27 @@
 # SGLang MiniMax-H3 简体中文 WebUI
 
-针对 SGLang v0.5.22 原生 MiniMax-H3 Gradio 前端的简体中文本地化。仅更改页面显示与顶部控件，保留英文标题 SGLang MiniMax H3。用户要求移除的说明段落已完全删除。
+针对 SGLang v0.5.22 原生 MiniMax-H3 Gradio 前端的简体中文本地化。保留原有推理路径，仅调整页面控件与图片选择行为，保留英文标题 SGLang MiniMax H3。用户要求移除的说明段落已完全删除。
 
 - 中文输入标签、参数标签和生成按钮。
 - 顶部模型路径和任务选择框隐藏，任务由后端分区决定，通过 Gradio State 保留事件参数。
-- 不改模型权重、推理后端、API、CUDA 内核和原生 MiniMaxH3Pipeline，不依赖 ComfyUI 服务。\n- Ref2VA 增加“是否选择上传图片”开关：默认关闭，自动附带启动时生成的透明 RGBA PNG；打开后必须上传参考图。
+- 不改模型权重、推理后端、API、CUDA 内核和原生 MiniMaxH3Pipeline，不依赖 ComfyUI 服务。
+- Ref2VA 增加“是否选择上传图片”开关：默认关闭，自动附带启动时生成的透明 RGBA PNG；打开后必须上传参考图。
 - 只支持 SGLang v0.5.22。构建时 SHA-256 校验原版和译文，源文件版本不符即中止。
 
-## 在既有 openEuler Docker Compose 部署
+## 在现有 openEuler 上更新（无需 Git）
 
-要求服务器已经有原版 Docker Compose 配置 /data/minimax-h3/deploy/compose.yaml 和已构建的基础镜像 local/sglang-h3-native:v0.5.22。该镜像已经含 SGLang、Gradio 6.1.0 和 comfy-kitchen；本仓库只提供前端，不提供模型或驱动。
+在没有生成任务时，以 root 执行：
 
-    cd /data/minimax-h3/deploy
-    curl -fL --retry 3 https://github.com/Dugtx/SGLang-H3-ZH-WebUI/archive/refs/heads/main.tar.gz -o /tmp/sglang-h3-zh-webui.tar.gz
-    mkdir -p sglang-h3-zh-webui
-    tar -xzf /tmp/sglang-h3-zh-webui.tar.gz -C sglang-h3-zh-webui --strip-components=1
-    cp sglang-h3-zh-webui/compose.override.yaml compose.override.yaml
-    docker compose config --quiet
-    docker compose build sglang-h3
-    docker compose up -d --no-build --force-recreate sglang-h3
-    docker compose logs -f --tail 100 sglang-h3
+```bash
+curl -fL --retry 3 --connect-timeout 15 \
+  https://raw.githubusercontent.com/Dugtx/SGLang-H3-ZH-WebUI/main/scripts/deploy_no_git.sh \
+  -o /tmp/h3-deploy-no-git.sh
+bash /tmp/h3-deploy-no-git.sh
+```
 
-override 只变更镜像/构建上下文。保留原来的模型路径、INT8 权重路径、4 张 L20、其它启动参数和 0.0.0.0:18080、0.0.0.0:25146 端口，不修改原版 Compose 文件，也不修改 Docker daemon 配置。
+脚本下载源码压缩包、校验 v0.5.22-zh4、重建汉化覆盖文件并运行离线测试；**只有上述检查全部通过才更新部署目录**。之后更新 `compose.override.yaml`，构建新镜像并重新创建 `sglang-h3` 容器。
+
+本仓库只覆盖 WebUI 文件，不修改 `compose.yaml`、模型权重、GPU 参数、端口或 Docker daemon。构建依赖服务器现有基础镜像 `local/sglang-h3-native:v0.5.22`。重建容器会中断正在运行的生成任务，须在空闲时操作。
 
 ### 恢复原版 WebUI
 
@@ -42,6 +42,7 @@ override 只变更镜像/构建上下文。保留原来的模型路径、INT8 �
 - patches/minimax_h3_zh.patch：全部差异
 - manifest.json：上游及译文 SHA-256
 - scripts/build_overlay.py：重新生成译文及 patch
+- scripts/deploy_no_git.sh：无需 Git 的下载、校验、构建和部署脚本
 - scripts/apply_overlay.py：Docker 构建时校验并覆盖官方 UI
 - tests/test_localization.py：语法、哈希、回调与关键控件测试
 - Dockerfile：以本地已验证 SGLang 镜像为基础，覆盖单个 UI 文件
