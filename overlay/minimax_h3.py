@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-import tempfile
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
@@ -180,6 +179,7 @@ def run_minimax_h3_webui(server_args: "ServerArgs"):
     # Keep it as an RGBA PNG; the existing media pipeline owns decoding.
     transparent_reference = None
     if "ref2va" in tasks:
+        import tempfile
         from PIL import Image
 
         placeholder_dir = tempfile.mkdtemp(prefix="sglang_h3_ref_")
