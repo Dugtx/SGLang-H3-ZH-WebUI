@@ -60,6 +60,23 @@ for old, new in replacements:
         raise SystemExit(f"FAIL: expected exactly 1 occurrence for {old!r}, found {count}")
     modified = modified.replace(old, new, 1)
 
+# Functional opt-in reference-image switch, applied after localization.
+extra_replacements = [
+    ("import os\nfrom typing import TYPE_CHECKING, Any\n", "import os\nimport tempfile\nfrom typing import TYPE_CHECKING, Any\n"),
+    ("    sync_scheduler_client.initialize(server_args)\n\n    def generate(", "    sync_scheduler_client.initialize(server_args)\n\n    # The checked-in Ref2VA fallback is generated only once when the UI starts.\n    # Keep it as an RGBA PNG; the existing media pipeline owns decoding.\n    transparent_reference = None\n    if \"ref2va\" in tasks:\n        from PIL import Image\n\n        placeholder_dir = tempfile.mkdtemp(prefix=\"sglang_h3_ref_\")\n        transparent_reference = os.path.join(placeholder_dir, \"transparent.png\")\n        Image.new(\"RGBA\", (512, 512), (0, 0, 0, 0)).save(\n            transparent_reference, format=\"PNG\"\n        )\n\n    def generate("),
+    ("        reference_audio,\n        seed,\n", "        reference_audio,\n        use_uploaded_reference_image,\n        seed,\n"),
+    ("    ):\n        kwargs = build_minimax_h3_sampling_params_kwargs(\n", "    ):\n        if task == \"ref2va\":\n            if use_uploaded_reference_image:\n                if not reference_image:\n                    raise gr.Error(\"已开启图片上传，请先选择参考图片\")\n            else:\n                # Ignore any previously uploaded image when the switch is off.\n                reference_image = transparent_reference\n\n        kwargs = build_minimax_h3_sampling_params_kwargs(\n"),
+    ("        task = gr.State(value=tasks[0])\n\n        prompt =", "        task = gr.State(value=tasks[0])\n\n        upload_reference_image = gr.Checkbox(\n            label=\"是否选择上传图片\", value=False, visible=\"ref2va\" in tasks\n        )\n\n        prompt ="),
+    ("reference_image = gr.Image(label=\"参考图片\", type=\"filepath\")", "reference_image = gr.Image(\n                label=\"参考图片\",\n                type=\"filepath\",\n                visible=\"ref2va\" not in tasks,\n            )"),
+    ("        run_btn = gr.Button(\"开始生成\", variant=\"primary\")\n", "        upload_reference_image.change(\n            fn=lambda enabled: gr.update(visible=bool(enabled), value=None),\n            inputs=upload_reference_image,\n            outputs=reference_image,\n        )\n\n        run_btn = gr.Button(\"开始生成\", variant=\"primary\")\n"),
+    ("                reference_audio,\n                seed,\n", "                reference_audio,\n                upload_reference_image,\n                seed,\n"),
+]
+for old, new in extra_replacements:
+    count = modified.count(old)
+    if count != 1:
+        raise SystemExit(f"FAIL: expected exactly 1 occurrence for {old!r}, found {count}")
+    modified = modified.replace(old, new, 1)
+
 DST.parent.mkdir(parents=True, exist_ok=True)
 PATCH.parent.mkdir(parents=True, exist_ok=True)
 DST.write_text(modified, encoding="utf-8")
@@ -77,9 +94,9 @@ manifest = {
     "source_relative_path": "python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
     "upstream_sha256": source_hash,
     "localized_sha256": hashlib.sha256(modified.encode("utf-8")).hexdigest(),
-    "change_scope": "H3 labels, English title, top model/task controls hidden; task via Gradio State",
-    "changes": len(replacements),
-    "release": "v0.5.22-zh3",
+    "change_scope": "H3 Chinese labels, hidden top controls, Ref2VA optional image with transparent fallback",
+    "changes": len(replacements) + len(extra_replacements),
+    "release": "v0.5.22-zh4",
 }
 (ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 print(json.dumps(manifest, ensure_ascii=False, indent=2))
