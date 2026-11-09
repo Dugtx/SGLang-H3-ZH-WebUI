@@ -1,14 +1,6 @@
 --- a/python/sglang/multimodal_gen/apps/webui/minimax_h3.py
 +++ b/python/sglang/multimodal_gen/apps/webui/minimax_h3.py
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: Apache-2.0
- 
- import os
-+import tempfile
- from typing import TYPE_CHECKING, Any
- from urllib.parse import urlparse
- 
-@@ -175,6 +176,18 @@
+@@ -175,6 +175,19 @@
      profile = minimax_h3_task_profile(tasks[0])
      sync_scheduler_client.initialize(server_args)
  
@@ -16,6 +8,7 @@
 +    # Keep it as an RGBA PNG; the existing media pipeline owns decoding.
 +    transparent_reference = None
 +    if "ref2va" in tasks:
++        import tempfile
 +        from PIL import Image
 +
 +        placeholder_dir = tempfile.mkdtemp(prefix="sglang_h3_ref_")
