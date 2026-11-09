@@ -4,7 +4,7 @@
 
 - 中文输入标签、参数标签和生成按钮。
 - 顶部模型路径和任务选择框隐藏，任务由后端分区决定，通过 Gradio State 保留事件参数。
-- 不改模型权重、生成回调、API、CUDA 内核和原生 MiniMaxH3Pipeline，不依赖 ComfyUI 服务。
+- 不改模型权重、推理后端、API、CUDA 内核和原生 MiniMaxH3Pipeline，不依赖 ComfyUI 服务。\n- Ref2VA 增加“是否选择上传图片”开关：默认关闭，自动附带启动时生成的透明 RGBA PNG；打开后必须上传参考图。
 - 只支持 SGLang v0.5.22。构建时 SHA-256 校验原版和译文，源文件版本不符即中止。
 
 ## 在既有 openEuler Docker Compose 部署
@@ -12,7 +12,9 @@
 要求服务器已经有原版 Docker Compose 配置 /data/minimax-h3/deploy/compose.yaml 和已构建的基础镜像 local/sglang-h3-native:v0.5.22。该镜像已经含 SGLang、Gradio 6.1.0 和 comfy-kitchen；本仓库只提供前端，不提供模型或驱动。
 
     cd /data/minimax-h3/deploy
-    git clone --depth 1 https://github.com/Dugtx/SGLang-H3-ZH-WebUI.git sglang-h3-zh-webui
+    curl -fL --retry 3 https://github.com/Dugtx/SGLang-H3-ZH-WebUI/archive/refs/heads/main.tar.gz -o /tmp/sglang-h3-zh-webui.tar.gz
+    mkdir -p sglang-h3-zh-webui
+    tar -xzf /tmp/sglang-h3-zh-webui.tar.gz -C sglang-h3-zh-webui --strip-components=1
     cp sglang-h3-zh-webui/compose.override.yaml compose.override.yaml
     docker compose config --quiet
     docker compose build sglang-h3
@@ -28,6 +30,10 @@ override 只变更镜像/构建上下文。保留原来的模型路径、INT8 �
     docker compose up -d --no-build --force-recreate sglang-h3
 
 回退只切换镜像，不删除模型、权重或缓存。
+
+## 参考图片开关（v0.5.22-zh4）
+
+在 Ref2VA 页面上，开关默认关闭，参考图片上传组件隐藏；提交时自动附带一张启动时在容器临时目录生成的透明 PNG。开启后显示上传组件，未选择图片时拒绝提交。开关变化会清空旧上传内容，关闭时生成回调也会忽略旧图。关键帧、视频、音频、提示词及推理设置保持不变。该占位图仍属于 Ref2VA 条件，不等价于真正的 T2VA 模式。
 
 ## 仓库文件
 
