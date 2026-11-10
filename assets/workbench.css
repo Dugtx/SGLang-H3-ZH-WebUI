@@ -794,3 +794,101 @@ html[data-wb-theme="light"] #wb-root .wb-wait-disclaimer {color:#96a4bd;}
   #wb-root .wb-history-toolbar, #wb-root .wb-history-media { flex-wrap: wrap; }
   #wb-root .wb-history-toolbar > *, #wb-root .wb-history-media > * { min-width: 100% !important; }
 }
+
+/* V4.3.1 history panel palette hotfix: keep Gradio Dataframe native colors aligned with Studio. */
+/* Gradio Dataframe uses its own table color tokens. Override them only
+   inside the history panel, without changing any callbacks or components. */
+#wb-root #wb-history-card {
+  --h3h-bg: #101b2f;
+  --h3h-alt: #15233a;
+  --h3h-head: #1c2b46;
+  --h3h-hover: #263957;
+  --h3h-text: #e8effe;
+  --h3h-muted: #aebdd8;
+  --h3h-border: #344660;
+  --body-text-color: var(--h3h-text);
+  --input-text-color: var(--h3h-text);
+  --block-label-text-color: var(--h3h-muted);
+  --background-fill-primary: var(--h3h-bg);
+  --background-fill-secondary: var(--h3h-alt);
+  --block-background-fill: var(--h3h-bg);
+  --input-background-fill: var(--h3h-bg);
+  --input-border-color: var(--h3h-border);
+  --border-color-primary: var(--h3h-border);
+  --table-even-background-fill: var(--h3h-alt);
+  --table-odd-background-fill: var(--h3h-bg);
+  --table-row-focus: var(--h3h-hover);
+  --table-border-color: var(--h3h-border);
+}
+#wb-root #wb-history-card #wb-history-table,
+#wb-root #wb-history-card #wb-history-table .table-container,
+#wb-root #wb-history-card #wb-history-table .table-wrap,
+#wb-root #wb-history-card #wb-history-table .virtual-table-viewport,
+#wb-root #wb-history-card #wb-history-table .upload-container {
+  background: var(--h3h-bg) !important;
+  color: var(--h3h-text) !important;
+  border-color: var(--h3h-border) !important;
+}
+#wb-root #wb-history-card #wb-history-table .header-table,
+#wb-root #wb-history-card #wb-history-table thead,
+#wb-root #wb-history-card #wb-history-table thead tr,
+#wb-root #wb-history-card #wb-history-table thead th,
+#wb-root #wb-history-card #wb-history-table .header-cell,
+#wb-root #wb-history-card #wb-history-table .row-number-header {
+  background: var(--h3h-head) !important;
+  color: var(--h3h-text) !important;
+  border-color: var(--h3h-border) !important;
+}
+#wb-root #wb-history-card #wb-history-table .virtual-row,
+#wb-root #wb-history-card #wb-history-table tbody tr {
+  background: var(--h3h-bg) !important;
+  color: var(--h3h-text) !important;
+  border-color: var(--h3h-border) !important;
+}
+#wb-root #wb-history-card #wb-history-table .virtual-row.row-odd,
+#wb-root #wb-history-card #wb-history-table tbody tr:nth-child(even) {
+  background: var(--h3h-alt) !important;
+}
+#wb-root #wb-history-card #wb-history-table .virtual-row:hover,
+#wb-root #wb-history-card #wb-history-table tbody tr:hover {
+  background: var(--h3h-hover) !important;
+}
+#wb-root #wb-history-card #wb-history-table :is(th, td, .virtual-cell, .cell-wrap, .row-number-cell, [role="gridcell"], [role="columnheader"]) {
+  color: var(--h3h-text) !important;
+  border-color: var(--h3h-border) !important;
+}
+#wb-root #wb-history-card #wb-history-table :is(input, textarea, select) {
+  background: var(--h3h-bg) !important;
+  color: var(--h3h-text) !important;
+}
+#wb-root #wb-history-card :is(#wb-history-search, #wb-history-select) :is(input, textarea, .wrap, .wrap-inner),
+#wb-root #wb-history-card .wb-history-pager input,
+#wb-root #wb-history-card .wb-history-pager .wrap {
+  background: var(--h3h-bg) !important;
+  color: var(--h3h-text) !important;
+  border-color: var(--h3h-border) !important;
+}
+#wb-root #wb-history-card :is(.wb-history-toolbar, .wb-history-pager) button {
+  background: var(--h3h-alt) !important;
+  color: var(--h3h-text) !important;
+  border: 1px solid var(--h3h-border) !important;
+}
+#wb-root #wb-history-card :is(.wb-history-toolbar, .wb-history-pager) button:hover {
+  background: var(--h3h-hover) !important;
+}
+#wb-root #wb-history-card :is(#wb-history-search, #wb-history-select, #wb-history-video, #wb-history-download) label {
+  color: var(--h3h-muted) !important;
+}
+#wb-root #wb-history-card #wb-history-table .virtual-table-viewport {
+  scrollbar-color: #506583 var(--h3h-bg);
+}
+/* The project also supports a genuine light theme: retain dark text there. */
+html[data-wb-theme="light"] #wb-root #wb-history-card {
+  --h3h-bg: #fbfdff;
+  --h3h-alt: #f0f4fc;
+  --h3h-head: #e5ecf9;
+  --h3h-hover: #dbe5f8;
+  --h3h-text: #253552;
+  --h3h-muted: #647695;
+  --h3h-border: #cbd6e9;
+}
