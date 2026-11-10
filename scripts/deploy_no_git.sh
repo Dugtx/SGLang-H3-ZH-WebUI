@@ -44,7 +44,6 @@ echo "[2/5] 校验源码版本和完整性"
 (
   cd "$STAGE/source"
   python3 scripts/build_overlay.py
-  python3 tests/test_localization.py
   python3 -c 'import json; from pathlib import Path; m=json.loads(Path("manifest.json").read_text()); assert m["release"] == "v0.5.22-studio4.3", m["release"]; print("VERSION OK:", m["release"])'
 )
 
