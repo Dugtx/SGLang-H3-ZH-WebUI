@@ -5,7 +5,7 @@
   "upstream_commit": "35ce313293052f8362e0829e7512bc9bc3d336c9",
   "source_relative_path": "python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
   "upstream_sha256": "d140b465872a9f16f658b6dfc92e25e2a98306482b4c9cb6c31c7ebe6a8413a9",
-  "localized_sha256": "0446b2edfe9a00930f971652ae578bd4c5da574708c038e20b9dc060d88e641b",
+  "localized_sha256": "d951c77afc4374afff46f7a13639d0a2d0876177a082dedb7cb18debbef30f3e",
   "history_sha256": "3cf91b7ebd711b2009323668187fe996028ed5d119c0b71c6a86723def784bca",
   "change_scope": "Studio V4.3: persistent output history (SQLite + MP4 browser) and unchanged SGLang inference core",
   "changes": 26,

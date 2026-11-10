@@ -576,6 +576,344 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
   #h3-root .h3-history-media { flex-wrap:wrap !important; }
   #h3-root .h3-history-media > * { min-width:100% !important; }
 }
+
+/* VNext refined component language: true Gradio Column card shells.
+   The old gr.Group API does not render elem_classes in Gradio 6.
+   In particular, padding and radius were silently missing. */
+#h3-root {
+  --h3-radius-lg: 19px;
+  --h3-radius-md: 13px;
+  --h3-radius-sm: 10px;
+  --h3-card-border: rgba(129,150,192,.18);
+  --h3-control-border: rgba(144,163,202,.23);
+  --h3-surface-hover: #1d2a42;
+  --h3-focus-ring: rgba(108,150,255,.18);
+  --h3-label: #b5c4dc;
+}
+#h3-root #h3-content { padding-top:35px !important; }
+#h3-root .h3-page { gap:22px !important; }
+#h3-root .h3-page-heading { margin:0 0 11px; }
+#h3-root .h3-card {
+  background:linear-gradient(152deg,rgba(24,35,55,.98),rgba(16,25,43,.98)) !important;
+  border:1px solid var(--h3-card-border) !important;
+  border-radius:var(--h3-radius-lg) !important;
+  box-shadow:0 12px 38px rgba(2,7,20,.15),inset 0 1px 0 rgba(218,232,255,.028) !important;
+  padding:22px 23px 23px !important;
+  gap:17px !important;
+  min-width:0;
+  overflow:visible !important;
+}
+#h3-root .h3-card > div { min-width:0; }
+#h3-root .h3-card .h3-html { border:0 !important; background:transparent !important; box-shadow:none !important; padding:0 !important; }
+#h3-root .h3-card .h3-section-head { padding:0 0 13px; border-bottom:1px solid rgba(142,163,204,.13); }
+#h3-root .h3-card .h3-section-head strong { font-size:14px; font-weight:760; letter-spacing:.05px; }
+#h3-root .h3-card .h3-section-index {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:31px; height:29px; color:#b5c9ff;
+  background:rgba(104,138,239,.12);
+  border:1px solid rgba(137,160,249,.16);
+  border-radius:9px;
+}
+#h3-root .h3-card .h3-section-hint { color:#879bb8; font-size:10px; letter-spacing:1.2px; }
+#h3-root .h3-editor, #h3-root .h3-preview-column { gap:19px !important; }
+#h3-root #h3-prompt {
+  background:transparent !important;
+  border:0 !important;
+  border-radius:var(--h3-radius-md) !important;
+  padding:0 !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+#h3-root #h3-prompt textarea {
+  display:block;
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-md) !important;
+  background:rgba(9,17,32,.62) !important;
+  min-height:152px !important;
+  padding:17px 18px !important;
+  font-size:13px !important;
+  line-height:1.85 !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.1) !important;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+#h3-root #h3-prompt textarea:focus {
+  border-color:var(--h3-accent) !important;
+  box-shadow:0 0 0 3px var(--h3-focus-ring),inset 0 1px 3px rgba(0,0,0,.1) !important;
+  outline:0 !important;
+}
+#h3-root .h3-card-footnote { color:var(--h3-muted); line-height:1.7; padding:0 2px; }
+#h3-root .h3-prompt-card { gap:15px !important; }
+#h3-root .h3-material-card { gap:15px !important; }
+#h3-root #h3-image-toggle {
+  padding:12px 15px !important; border-radius:var(--h3-radius-md) !important;
+  border:1px solid var(--h3-control-border) !important;
+  background:rgba(78,105,168,.08) !important;
+}
+#h3-root #h3-image-toggle:hover { background:rgba(87,116,186,.13) !important; }
+#h3-root #h3-image-toggle label { color:var(--h3-ink) !important; font-size:12px !important; }
+#h3-root .h3-card .h3-media-row > div { min-width:0 !important; }
+#h3-root :is(#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio,#wb-history-video,#wb-history-download) {
+  background:rgba(9,17,32,.46) !important;
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-md) !important;
+  overflow:hidden !important;
+  box-shadow:none !important;
+}
+#h3-root :is(#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio,#wb-history-video,#wb-history-download) .upload-container,
+#h3-root :is(#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio,#wb-history-video,#wb-history-download) .empty,
+#h3-root :is(#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio,#wb-history-video,#wb-history-download) .file-preview,
+#h3-root #wb-output-video .video-container {
+  background:rgba(9,17,32,.45) !important;
+  color:var(--h3-muted) !important;
+}
+#h3-root .h3-accordion {
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-md) !important;
+  background:rgba(9,17,32,.38) !important;
+  overflow:hidden !important;
+}
+#h3-root #h3-material-accordion,
+#h3-root #h3-settings-accordion {
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-md) !important;
+  background:rgba(9,17,32,.38) !important;
+  overflow:hidden !important;
+}
+#h3-root :is(#h3-material-accordion,#h3-settings-accordion) > button,
+#h3-root :is(#h3-material-accordion,#h3-settings-accordion) > .label-wrap,
+#h3-root .h3-accordion > button,
+#h3-root .h3-accordion > .label-wrap {
+  background:rgba(62,82,124,.16) !important;
+  border:0 !important; border-radius:0 !important;
+  color:var(--h3-ink) !important;
+  padding:14px 16px !important;
+  font-size:12px !important; font-weight:710 !important;
+}
+#h3-root :is(#h3-material-accordion,#h3-settings-accordion) > button:hover,
+#h3-root .h3-accordion > button:hover { background:rgba(88,111,159,.24) !important; }
+#h3-root .h3-settings-card { gap:16px !important; }
+#h3-root .h3-settings-row { gap:18px !important; align-items:center !important; }
+#h3-root .h3-settings-row label { color:var(--h3-label) !important; font-size:11px !important; font-weight:680 !important; }
+#h3-root .h3-settings-card .wrap,
+#h3-root .h3-settings-card .wrap-inner,
+#h3-root .h3-settings-card input:not([type=range]),
+#h3-root .h3-settings-card select {
+  background:rgba(9,17,32,.56) !important;
+  color:var(--h3-ink) !important;
+  border-color:var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-sm) !important;
+}
+#h3-root .h3-settings-card input:focus-visible { outline:2px solid var(--h3-accent); outline-offset:2px; }
+#h3-root .h3-generate {
+  border-radius:var(--h3-radius-md) !important;
+  min-height:57px !important;
+  font-size:14px !important;
+  background:linear-gradient(110deg,#557be9,#8196ff) !important;
+  border:1px solid rgba(172,191,255,.32) !important;
+  box-shadow:0 12px 26px rgba(69,99,204,.18),inset 0 1px 0 rgba(255,255,255,.1) !important;
+  transition:filter .15s ease,transform .15s ease,box-shadow .15s ease;
+}
+#h3-root .h3-generate:hover:not(:disabled) {
+  filter:brightness(1.09); transform:translateY(-1px);
+  box-shadow:0 17px 32px rgba(69,99,204,.26) !important;
+}
+#h3-root .h3-generate:focus-visible,
+#h3-root .h3-nav:focus-visible,
+#h3-root .h3-theme-button:focus-visible {
+  outline:2px solid var(--h3-accent) !important; outline-offset:3px !important;
+}
+#h3-root .h3-preview-card { gap:16px !important; }
+#h3-root #wb-output-video {
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-md) !important;
+  overflow:hidden !important;
+  background:rgba(7,14,28,.55) !important;
+}
+#h3-root .h3-preview-hint {
+  background:rgba(70,93,143,.075) !important;
+  border:1px solid rgba(136,157,197,.10);
+  border-radius:var(--h3-radius-md); padding:16px 15px;
+  color:var(--h3-muted); line-height:1.9;
+}
+#h3-root .h3-preview-note {
+  background:linear-gradient(140deg,rgba(21,35,59,.9),rgba(18,27,46,.9));
+  border:1px solid var(--h3-card-border);
+  border-radius:var(--h3-radius-lg);
+  padding:19px 21px;
+}
+#h3-root .h3-preview-note p { line-height:1.85; }
+#h3-root .h3-page-mode,
+#h3-root .h3-engine-chip,
+#h3-root .h3-theme-button {
+  border-radius:var(--h3-radius-sm);
+  border-color:var(--h3-control-border);
+}
+#h3-root .h3-nav {
+  border-radius:var(--h3-radius-md) !important;
+  transition:background .17s ease,color .17s ease,border .17s ease;
+}
+#h3-root .h3-nav.primary {
+  background:linear-gradient(105deg,rgba(95,124,223,.24),rgba(90,120,221,.07)) !important;
+}
+#h3-root .h3-sidebar-bottom {
+  border-radius:var(--h3-radius-lg);
+  padding:19px;
+  background:linear-gradient(145deg,rgba(63,93,151,.14),rgba(26,41,68,.08));
+}
+#h3-root .h3-history-card { gap:17px !important; }
+#h3-root .h3-history-toolbar { align-items:center !important; gap:10px !important; }
+#h3-root .h3-history-toolbar > div { min-width:0 !important; }
+#h3-root .h3-history-toolbar button,
+#h3-root .h3-history-pager button {
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-sm) !important;
+  background:var(--h3-raised) !important;
+  color:var(--h3-ink) !important;
+  min-height:41px !important;
+  box-shadow:none !important;
+  font-weight:650 !important;
+  padding:9px 14px !important;
+}
+#h3-root .h3-history-toolbar button:hover,
+#h3-root .h3-history-pager button:hover {
+  background:var(--h3-surface-hover) !important;
+  border-color:var(--h3-accent) !important;
+}
+#h3-root #wb-history-search {
+  background:transparent !important; border:0 !important; padding:0 !important;
+}
+#h3-root #wb-history-search input,
+#h3-root #wb-history-select input,
+#h3-root .h3-history-pager input,
+#h3-root .h3-history-detail-card textarea {
+  background:rgba(8,17,32,.52) !important;
+  color:var(--h3-ink) !important;
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-sm) !important;
+  padding:11px 13px !important;
+}
+#h3-root #wb-history-table {
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-md) !important;
+  overflow:hidden !important;
+  background:var(--h3-input) !important;
+}
+#h3-root #wb-history-table :is(.table-container,.table-wrap,.upload-container,.virtual-table-viewport) {
+  border-radius:var(--h3-radius-md) !important;
+  border-color:var(--h3-control-border) !important;
+}
+#h3-root #wb-history-table :is(.header-table,th,.header-cell) {
+  color:var(--h3-ink) !important; background:var(--h3-raised) !important;
+}
+#h3-root #wb-history-table .virtual-row { color:var(--h3-ink) !important; min-height:39px !important; }
+#h3-root #wb-history-table :is(.virtual-cell,.cell-wrap,[role=gridcell]) { color:var(--h3-ink) !important; }
+#h3-root .h3-history-pager { align-items:center !important; gap:13px !important; }
+#h3-root .h3-history-detail-card { gap:16px !important; }
+#h3-root #wb-history-download {
+  min-height:240px !important;
+  border:1px dashed var(--h3-control-border) !important;
+  border-radius:var(--h3-radius-md) !important;
+  background:rgba(8,17,32,.45) !important;
+}
+#h3-root #wb-history-video { border-radius:var(--h3-radius-md) !important; }
+#h3-root .h3-guide-card {
+  border-radius:var(--h3-radius-lg) !important;
+  border-color:var(--h3-card-border) !important;
+  padding:27px 26px;
+  box-shadow:var(--h3-shadow);
+}
+#h3-root .h3-guide-card:hover { border-color:rgba(125,151,229,.35) !important; }
+#h3-root .h3-help-note { border-radius:var(--h3-radius-lg); }
+#h3-root .h3-footer { margin-top:24px; }
+/* Light mode redefines component surfaces so the exact same radii and spacing apply. */
+#h3-root[data-h3-theme="light"] {
+  --h3-card-border:#dbe3ef;
+  --h3-control-border:#cfdaea;
+  --h3-surface-hover:#e5edfa;
+  --h3-focus-ring:rgba(84,114,224,.17);
+  --h3-label:#607290;
+}
+#h3-root[data-h3-theme="light"] .h3-card {
+  background:linear-gradient(153deg,#fff,#f9fbff) !important;
+  box-shadow:0 12px 32px rgba(55,83,138,.055),inset 0 1px 0 #fff !important;
+}
+#h3-root[data-h3-theme="light"] #h3-prompt textarea,
+#h3-root[data-h3-theme="light"] #wb-history-search input,
+#h3-root[data-h3-theme="light"] #wb-history-select input,
+#h3-root[data-h3-theme="light"] .h3-history-pager input,
+#h3-root[data-h3-theme="light"] .h3-history-detail-card textarea,
+#h3-root[data-h3-theme="light"] .h3-settings-card input:not([type=range]),
+#h3-root[data-h3-theme="light"] .h3-settings-card .wrap,
+#h3-root[data-h3-theme="light"] .h3-settings-card .wrap-inner {
+  background:#f8faff !important; color:#273757 !important;
+}
+#h3-root[data-h3-theme="light"] :is(#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio,#wb-output-video,#wb-history-video,#wb-history-download),
+#h3-root[data-h3-theme="light"] :is(#h3-material-accordion,#h3-settings-accordion) {
+  background:#f7f9ff !important;
+}
+#h3-root[data-h3-theme="light"] .h3-preview-note { background:#fff; }
+#h3-root[data-h3-theme="light"] .h3-history-toolbar button,
+#h3-root[data-h3-theme="light"] .h3-history-pager button { background:#eef3fc !important; color:#273757 !important; }
+@media (max-width:1150px) {
+  #h3-root .h3-card { padding:20px !important; }
+}
+@media (max-width:760px) {
+  #h3-root .h3-card { border-radius:16px !important; padding:18px !important; }
+  #h3-root .h3-history-toolbar { flex-wrap:wrap !important; }
+  #h3-root .h3-history-toolbar button { flex:1; }
+  #h3-root .h3-create-grid { gap:18px !important; }
+}
+
+/* Media and file block labels are hardcoded white by Gradio 6.
+   Explicitly skin their exact native [data-testid] element. */
+#h3-root :is(#wb-output-video,#wb-history-video,#wb-history-download,#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio) > label[data-testid="block-label"] {
+  background:#24344f !important;
+  color:#d5e1ff !important;
+  border:1px solid rgba(142,163,207,.22) !important;
+  border-top:0 !important;
+  border-left:0 !important;
+  border-radius:0 0 10px 0 !important;
+  font-size:10.5px !important;
+  font-weight:700 !important;
+  letter-spacing:.15px;
+  padding:6px 12px !important;
+  line-height:1.5 !important;
+  box-shadow:none !important;
+}
+#h3-root :is(#wb-output-video,#wb-history-video,#wb-history-download,#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio) > label[data-testid="block-label"] :is(svg,span) {
+  color:#afc5f6 !important;
+}
+#h3-root #wb-history-select {
+  padding:0 !important;
+  border:0 !important;
+  border-radius:var(--h3-radius-md) !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+#h3-root #wb-history-select .wrap {
+  border-radius:var(--h3-radius-md) !important;
+  background:var(--h3-input) !important;
+  border:1px solid var(--h3-control-border) !important;
+  overflow:hidden;
+}
+#h3-root #wb-history-select label,
+#h3-root .h3-history-detail-card label {
+  color:var(--h3-label) !important;
+  font-weight:700 !important;
+  letter-spacing:.05px;
+}
+#h3-root .h3-card :is(button,input,textarea,select):focus-visible {
+  outline:2px solid var(--h3-accent) !important;
+  outline-offset:2px !important;
+}
+#h3-root[data-h3-theme="light"] :is(#wb-output-video,#wb-history-video,#wb-history-download,#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio) > label[data-testid="block-label"] {
+  background:#e7edfa !important;
+  color:#384d70 !important;
+  border-color:#ccd8ea !important;
+}
+#h3-root[data-h3-theme="light"] :is(#wb-output-video,#wb-history-video,#wb-history-download,#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio) > label[data-testid="block-label"] :is(svg,span) {
+  color:#6278a4 !important;
+}
 """
 
     workbench_js = r"""
@@ -792,7 +1130,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                         )
                         with gr.Row(elem_classes=["h3-create-grid"]):
                             with gr.Column(scale=7, min_width=430, elem_classes=["h3-editor"]):
-                                with gr.Group(elem_classes=["h3-card", "h3-prompt-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-prompt-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-section-index">01</span><strong>画面描述</strong></div>
@@ -811,7 +1149,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                         elem_classes=["h3-html"],
                                     )
 
-                                with gr.Group(elem_classes=["h3-card", "h3-material-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-material-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-section-index">02</span><strong>素材输入</strong></div>
@@ -839,7 +1177,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                             label="尾帧关键帧", type="filepath", height=156,
                                             elem_id="h3-last-frame",
                                         )
-                                    with gr.Accordion("更多素材 · 参考视频 / 音频", open=False, elem_classes=["h3-accordion"]):
+                                    with gr.Accordion("更多素材 · 参考视频 / 音频", open=False, elem_classes=["h3-accordion"], elem_id="h3-material-accordion"):
                                         with gr.Row(elem_classes=["h3-media-row"]):
                                             reference_video = gr.Video(
                                                 label="参考视频", height=150,
@@ -850,7 +1188,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                                 elem_id="h3-reference-audio",
                                             )
 
-                                with gr.Group(elem_classes=["h3-card", "h3-settings-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-settings-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-section-index">03</span><strong>生成设置</strong></div>
@@ -866,7 +1204,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                             minimum=4.0, maximum=15.0, value=5.0, step=0.5,
                                             label="视频时长（秒）",
                                         )
-                                    with gr.Accordion("高级参数", open=False, elem_classes=["h3-accordion"]):
+                                    with gr.Accordion("高级参数", open=False, elem_classes=["h3-accordion"], elem_id="h3-settings-accordion"):
                                         with gr.Row(elem_classes=["h3-settings-row"]):
                                             seed = gr.Number(label="随机种子", precision=0, value=1234)
                                             short_edge = gr.Number(
@@ -891,7 +1229,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                 )
 
                             with gr.Column(scale=5, min_width=315, elem_classes=["h3-preview-column"]):
-                                with gr.Group(elem_classes=["h3-card", "h3-preview-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-preview-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-preview-symbol">▶</span><strong>视频预览</strong></div>
@@ -924,7 +1262,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                 <p>查看过去生成的视频，预览与下载原始 MP4。</p></div>
                             </div>""", elem_classes=["h3-html"],
                         )
-                        with gr.Group(elem_id="wb-history-card", elem_classes=["h3-card", "h3-history-card"]):
+                        with gr.Column(elem_id="wb-history-card", elem_classes=["h3-card", "h3-history-card"]):
                             history_page_state = gr.State(0)
                             with gr.Row(elem_classes=["h3-history-toolbar"]):
                                 history_search = gr.Textbox(
@@ -947,7 +1285,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                     value="", show_label=False, interactive=False, scale=3,
                                 )
                                 history_next_btn = gr.Button("下一页", size="sm")
-                        with gr.Group(elem_classes=["h3-card", "h3-history-detail-card"]):
+                        with gr.Column(elem_classes=["h3-card", "h3-history-detail-card"]):
                             gr.HTML(
                                 """<div class="h3-section-head">
                                     <div><strong>作品详情</strong></div>
@@ -1081,6 +1419,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
             prevent_thread_lock=True,
             show_error=True,
             allowed_paths=[str(history.output_dir)],
+            footer_links=[],
             **(style_kwargs if style_in_launch else {}),
         )
         url = local_url or f"http://localhost:{server_args.webui_port}"

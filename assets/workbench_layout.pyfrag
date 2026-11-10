@@ -167,7 +167,7 @@
                         )
                         with gr.Row(elem_classes=["h3-create-grid"]):
                             with gr.Column(scale=7, min_width=430, elem_classes=["h3-editor"]):
-                                with gr.Group(elem_classes=["h3-card", "h3-prompt-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-prompt-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-section-index">01</span><strong>画面描述</strong></div>
@@ -186,7 +186,7 @@
                                         elem_classes=["h3-html"],
                                     )
 
-                                with gr.Group(elem_classes=["h3-card", "h3-material-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-material-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-section-index">02</span><strong>素材输入</strong></div>
@@ -214,7 +214,7 @@
                                             label="尾帧关键帧", type="filepath", height=156,
                                             elem_id="h3-last-frame",
                                         )
-                                    with gr.Accordion("更多素材 · 参考视频 / 音频", open=False, elem_classes=["h3-accordion"]):
+                                    with gr.Accordion("更多素材 · 参考视频 / 音频", open=False, elem_classes=["h3-accordion"], elem_id="h3-material-accordion"):
                                         with gr.Row(elem_classes=["h3-media-row"]):
                                             reference_video = gr.Video(
                                                 label="参考视频", height=150,
@@ -225,7 +225,7 @@
                                                 elem_id="h3-reference-audio",
                                             )
 
-                                with gr.Group(elem_classes=["h3-card", "h3-settings-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-settings-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-section-index">03</span><strong>生成设置</strong></div>
@@ -241,7 +241,7 @@
                                             minimum=4.0, maximum=15.0, value=5.0, step=0.5,
                                             label="视频时长（秒）",
                                         )
-                                    with gr.Accordion("高级参数", open=False, elem_classes=["h3-accordion"]):
+                                    with gr.Accordion("高级参数", open=False, elem_classes=["h3-accordion"], elem_id="h3-settings-accordion"):
                                         with gr.Row(elem_classes=["h3-settings-row"]):
                                             seed = gr.Number(label="随机种子", precision=0, value=1234)
                                             short_edge = gr.Number(
@@ -266,7 +266,7 @@
                                 )
 
                             with gr.Column(scale=5, min_width=315, elem_classes=["h3-preview-column"]):
-                                with gr.Group(elem_classes=["h3-card", "h3-preview-card"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-preview-card"]):
                                     gr.HTML(
                                         """<div class="h3-section-head">
                                           <div><span class="h3-preview-symbol">▶</span><strong>视频预览</strong></div>
@@ -299,7 +299,7 @@
                                 <p>查看过去生成的视频，预览与下载原始 MP4。</p></div>
                             </div>""", elem_classes=["h3-html"],
                         )
-                        with gr.Group(elem_id="wb-history-card", elem_classes=["h3-card", "h3-history-card"]):
+                        with gr.Column(elem_id="wb-history-card", elem_classes=["h3-card", "h3-history-card"]):
                             history_page_state = gr.State(0)
                             with gr.Row(elem_classes=["h3-history-toolbar"]):
                                 history_search = gr.Textbox(
@@ -322,7 +322,7 @@
                                     value="", show_label=False, interactive=False, scale=3,
                                 )
                                 history_next_btn = gr.Button("下一页", size="sm")
-                        with gr.Group(elem_classes=["h3-card", "h3-history-detail-card"]):
+                        with gr.Column(elem_classes=["h3-card", "h3-history-detail-card"]):
                             gr.HTML(
                                 """<div class="h3-section-head">
                                     <div><strong>作品详情</strong></div>
@@ -456,6 +456,7 @@
             prevent_thread_lock=True,
             show_error=True,
             allowed_paths=[str(history.output_dir)],
+            footer_links=[],
             **(style_kwargs if style_in_launch else {}),
         )
         url = local_url or f"http://localhost:{server_args.webui_port}"
