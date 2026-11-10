@@ -112,6 +112,7 @@ manifest = {
     "upstream_sha256": source_hash,
     "localized_sha256": hashlib.sha256(modified.encode("utf-8")).hexdigest(),
     "history_sha256": hashlib.sha256((ROOT / "assets/history_store.py").read_bytes()).hexdigest(),
+    "prompt_templates_sha256": hashlib.sha256((ROOT / "assets/prompt_templates.py").read_bytes()).hexdigest(),
     "change_scope": "Studio V4.3: persistent output history (SQLite + MP4 browser) and unchanged SGLang inference core",
     "changes": len(replacements) + len(extra_replacements) + 2,
     "release": "v0.5.22-studio4.3",

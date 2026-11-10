@@ -59,6 +59,12 @@ history_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(history_module)
 sys.modules[name] = history_module
 
+prompt_name = "sglang.multimodal_gen.apps.webui.h3_studio_prompts"
+prompt_spec = importlib.util.spec_from_file_location(prompt_name, ROOT / "assets/prompt_templates.py")
+prompt_module = importlib.util.module_from_spec(prompt_spec)
+prompt_spec.loader.exec_module(prompt_module)
+sys.modules[prompt_name] = prompt_module
+
 
 class DummyScheduler:
     def initialize(self, *args, **kwargs):

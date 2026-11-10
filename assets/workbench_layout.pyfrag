@@ -3,6 +3,10 @@
     import logging
     import math
     from sglang.multimodal_gen.apps.webui.h3_studio_history import VideoHistory
+    from sglang.multimodal_gen.apps.webui.h3_studio_prompts import (
+        CATEGORIES, TEMPLATES, get_template, render_template, template_choices,
+        template_details,
+    )
 
     history_logger = logging.getLogger(__name__)
     history = VideoHistory(
@@ -81,6 +85,23 @@
             details.append("\u8b66\u544a: \u5f55\u50cf\u6587\u4ef6\u4e0d\u5b58\u5728\uff0c\u65e0\u6cd5\u64ad\u653e\u6216\u4e0b\u8f7d")
         return path, path, "\n".join(details)
 
+    # Prompt template library is independent of the model and generation handler.
+    def templates_filter(category, keyword):
+        choices = template_choices(category, keyword)
+        selected = choices[0][1] if choices else None
+        item = get_template(selected)
+        subject = item["sample_subject"] if item else ""
+        return (
+            gr.update(choices=choices, value=selected),
+            subject, render_template(selected, subject),
+            template_details(selected), f"共找到 {len(choices)} 个模板",
+        )
+
+    def templates_pick(template_id):
+        item = get_template(template_id)
+        subject = item["sample_subject"] if item else ""
+        return subject, render_template(template_id, subject), template_details(template_id)
+
     # UI workbench vNext: native Gradio pages, no hidden anchor-only navigation.
     import inspect
 
@@ -134,6 +155,10 @@
                         "✦   视频创作", variant="primary",
                         elem_id="h3-nav-create", elem_classes=["h3-nav"],
                     )
+                    nav_templates = gr.Button(
+                        "▣   提示词模板", variant="secondary",
+                        elem_id="h3-nav-templates", elem_classes=["h3-nav"],
+                    )
                     nav_history = gr.Button(
                         "▤   生成记录", variant="secondary",
                         elem_id="h3-nav-history", elem_classes=["h3-nav"],
@@ -181,10 +206,15 @@
                                         lines=4, max_lines=9, show_label=False,
                                         elem_id="h3-prompt",
                                     )
-                                    gr.HTML(
-                                        """<div class="h3-card-footnote">支持中文提示词，建议明确主体、运动和环境。</div>""",
-                                        elem_classes=["h3-html"],
-                                    )
+                                    with gr.Row(elem_classes=["h3-prompt-actions"]):
+                                        gr.HTML(
+                                            """<div class="h3-card-footnote">支持中文提示词，建议明确主体、运动和环境。</div>""",
+                                            elem_classes=["h3-html"],
+                                        )
+                                        open_templates_btn = gr.Button(
+                                            "浏览提示词模板", size="sm", variant="secondary",
+                                            elem_id="h3-open-templates", elem_classes=["h3-text-button"],
+                                        )
 
                                 with gr.Column(elem_classes=["h3-card", "h3-material-card"]):
                                     gr.HTML(
@@ -290,7 +320,98 @@
                                     </div>""", elem_classes=["h3-html"],
                                 )
 
-                    # Page 2: the existing history callbacks are kept as-is.
+                    # Page 2: a dedicated, independently maintained prompt library.
+                    with gr.Column(visible=False, elem_id="h3-page-templates", elem_classes=["h3-page"]) as page_templates:
+                        gr.HTML(
+                            """<div class="h3-page-heading">
+                              <div><div class="h3-eyebrow">PROMPT LIBRARY / 灵感中心</div>
+                              <h1>提示词模板<span class="h3-title-dot">.</span></h1>
+                              <p>找到合适的镜头描述，替换主体并调整细节，然后直接用于视频创作。</p></div>
+                              <span class="h3-page-mode">12 个精选模板</span>
+                            </div>""",
+                            elem_classes=["h3-html"],
+                        )
+                        with gr.Row(elem_classes=["h3-template-grid"]):
+                            with gr.Column(scale=5, min_width=315, elem_classes=["h3-template-browser"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-template-explore"]):
+                                    gr.HTML(
+                                        """<div class="h3-section-head">
+                                          <div><span class="h3-section-index">01</span><strong>探索模板</strong></div>
+                                          <span class="h3-section-hint">BROWSE</span>
+                                        </div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-field-label">模板分类</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_category = gr.Dropdown(
+                                        choices=list(CATEGORIES), value="全部",
+                                        label="模板分类", show_label=False,
+                                        elem_id="h3-template-category",
+                                    )
+                                    with gr.Row(elem_classes=["h3-template-search-row"]):
+                                        template_query = gr.Textbox(
+                                            placeholder="搜索风格、运镜、场景...",
+                                            show_label=False, scale=4,
+                                            elem_id="h3-template-query",
+                                        )
+                                        template_search_btn = gr.Button(
+                                            "搜索", variant="secondary", size="sm",
+                                            elem_id="h3-template-search",
+                                        )
+                                    template_count = gr.Markdown(
+                                        "共找到 12 个模板", elem_classes=["h3-template-count"],
+                                    )
+                                    template_selector = gr.Radio(
+                                        choices=template_choices(),
+                                        value=TEMPLATES[0]["id"],
+                                        label="选择一个模板", show_label=False,
+                                        elem_id="h3-template-selector",
+                                    )
+                            with gr.Column(scale=7, min_width=345, elem_classes=["h3-template-composer"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-template-preview-card"]):
+                                    gr.HTML(
+                                        """<div class="h3-section-head">
+                                          <div><span class="h3-section-index">02</span><strong>编辑并应用</strong></div>
+                                          <span class="h3-section-hint">COMPOSE</span>
+                                        </div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_info = gr.Markdown(
+                                        value=template_details(TEMPLATES[0]["id"]),
+                                        elem_classes=["h3-template-info"],
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-field-label">替换主体</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_subject = gr.Textbox(
+                                        value=TEMPLATES[0]["sample_subject"],
+                                        label="替换主体", show_label=False,
+                                        placeholder="例如：一只橘猫 / 一名旅行者 / 一款耳机",
+                                        elem_id="h3-template-subject",
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-field-label">可编辑提示词</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_preview = gr.Textbox(
+                                        value=render_template(TEMPLATES[0]["id"], TEMPLATES[0]["sample_subject"]),
+                                        label="可编辑提示词", show_label=False,
+                                        lines=9, max_lines=15,
+                                        elem_id="h3-template-preview",
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-template-tip">模板仅提供创作参考。可直接修改上面的描述；应用时不会自动开始生成。</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_apply_btn = gr.Button(
+                                        "应用到视频创作", variant="primary",
+                                        elem_id="h3-template-apply",
+                                    )
+
+                    # Page 3: existing history callbacks are unchanged.
                     with gr.Column(visible=False, elem_id="h3-page-history", elem_classes=["h3-page"]) as page_history:
                         gr.HTML(
                             """<div class="h3-page-heading">
@@ -348,7 +469,7 @@
                                 lines=4, max_lines=8,
                             )
 
-                    # Page 3: a genuine separate help page, not a dead sidebar link.
+                    # Page 4: a genuine separate help page.
                     with gr.Column(visible=False, elem_id="h3-page-help", elem_classes=["h3-page"]) as page_help:
                         gr.HTML(
                             """<div class="h3-page-heading">
@@ -359,7 +480,7 @@
                             <section class="h3-guide-grid">
                                 <article class="h3-guide-card"><div class="h3-guide-number">01</div>
                                   <h3>描述画面</h3>
-                                  <p>进入「视频创作」，输入主体、场景、动作、镜头运动和希望呈现的视觉风格。</p>
+                                  <p>进入「视频创作」输入完整描述，也可以从「提示词模板」选择风格、替换主体，再一键应用到创作区。</p>
                                 </article>
                                 <article class="h3-guide-card"><div class="h3-guide-number">02</div>
                                   <h3>准备素材与参数</h3>
@@ -386,7 +507,7 @@
             )
 
         def navigate(page):
-            views = ("create", "history", "help")
+            views = ("create", "templates", "history", "help")
             pages = tuple(gr.update(visible=(page == key)) for key in views)
             navs = tuple(
                 gr.update(variant="primary" if page == key else "secondary")
@@ -395,12 +516,50 @@
             return pages + navs
 
         navigation_outputs = [
-            page_create, page_history, page_help,
-            nav_create, nav_history, nav_help,
+            page_create, page_templates, page_history, page_help,
+            nav_create, nav_templates, nav_history, nav_help,
         ]
         nav_create.click(fn=lambda: navigate("create"), outputs=navigation_outputs)
+        nav_templates.click(fn=lambda: navigate("templates"), outputs=navigation_outputs)
+        open_templates_btn.click(fn=lambda: navigate("templates"), outputs=navigation_outputs)
         nav_history.click(fn=lambda: navigate("history"), outputs=navigation_outputs)
         nav_help.click(fn=lambda: navigate("help"), outputs=navigation_outputs)
+
+        template_filter_outputs = [
+            template_selector, template_subject, template_preview,
+            template_info, template_count,
+        ]
+        template_category.change(
+            fn=templates_filter, inputs=[template_category, template_query],
+            outputs=template_filter_outputs,
+        )
+        template_search_btn.click(
+            fn=templates_filter, inputs=[template_category, template_query],
+            outputs=template_filter_outputs,
+        )
+        template_query.submit(
+            fn=templates_filter, inputs=[template_category, template_query],
+            outputs=template_filter_outputs,
+        )
+        template_selector.change(
+            fn=templates_pick, inputs=template_selector,
+            outputs=[template_subject, template_preview, template_info],
+        )
+        template_subject.change(
+            fn=render_template, inputs=[template_selector, template_subject],
+            outputs=template_preview,
+        )
+
+        def apply_selected_template(value):
+            text = (value or "").strip()
+            if not text:
+                raise gr.Error("请选择一个提示词模板并填写内容")
+            return (text, *navigate("create"))
+
+        template_apply_btn.click(
+            fn=apply_selected_template, inputs=template_preview,
+            outputs=[prompt, *navigation_outputs],
+        )
 
         upload_reference_image.change(
             fn=lambda enabled: gr.update(visible=bool(enabled), value=None),

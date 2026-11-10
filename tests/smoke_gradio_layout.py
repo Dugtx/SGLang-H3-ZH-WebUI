@@ -19,6 +19,12 @@ spec=importlib.util.spec_from_file_location('sglang.multimodal_gen.apps.webui.h3
 hmod=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(hmod)
 sys.modules[spec.name]=hmod
+prompts_spec=importlib.util.spec_from_file_location(
+    'sglang.multimodal_gen.apps.webui.h3_studio_prompts', ROOT/'assets/prompt_templates.py'
+)
+prompts_module=importlib.util.module_from_spec(prompts_spec)
+prompts_spec.loader.exec_module(prompts_module)
+sys.modules[prompts_spec.name]=prompts_module
 
 with tempfile.TemporaryDirectory(prefix='h3gradio-smoke-') as td:
     os.environ['H3_OUTPUTS_DIR']=str(Path(td)/'outputs')

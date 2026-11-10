@@ -27,3 +27,11 @@ if hashlib.sha256(history_source.read_bytes()).hexdigest() != manifest["history_
 history_destination = pkg / "multimodal_gen/apps/webui/h3_studio_history.py"
 history_destination.write_bytes(history_source.read_bytes())
 print(f"H3 Studio history installed: {history_destination}")
+
+# Install the independent, stdlib-only prompt template catalog.
+prompt_source = Path("/tmp/h3_studio_prompts.py")
+if hashlib.sha256(prompt_source.read_bytes()).hexdigest() != manifest["prompt_templates_sha256"]:
+    raise SystemExit("H3 prompt template module SHA256 mismatch")
+prompt_destination = pkg / "multimodal_gen/apps/webui/h3_studio_prompts.py"
+prompt_destination.write_bytes(prompt_source.read_bytes())
+print(f"H3 Studio prompt library installed: {prompt_destination}")

@@ -914,6 +914,295 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
 #h3-root[data-h3-theme="light"] :is(#wb-output-video,#wb-history-video,#wb-history-download,#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio) > label[data-testid="block-label"] :is(svg,span) {
   color:#6278a4 !important;
 }
+
+/* VNext pass 3: calmer, smaller radii everywhere. */
+#h3-root {
+  --h3-radius-lg:14px;
+  --h3-radius-md:9px;
+  --h3-radius-sm:7px;
+}
+#h3-root .h3-card,
+#h3-root .h3-sidebar-bottom,
+#h3-root .h3-preview-note,
+#h3-root .h3-guide-card,
+#h3-root .h3-help-note { border-radius:14px !important; }
+#h3-root .h3-brand-icon,
+#h3-root .h3-nav,
+#h3-root .h3-preview-hint,
+#h3-root .h3-accordion,
+#h3-root :is(#h3-material-accordion,#h3-settings-accordion),
+#h3-root :is(#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio,#wb-output-video,#wb-history-video,#wb-history-download),
+#h3-root .h3-generate,
+#h3-root #wb-history-select,
+#h3-root #wb-history-select .wrap,
+#h3-root #wb-history-table,
+#h3-root #h3-prompt textarea,
+#h3-root #h3-image-toggle,
+#h3-root #wb-history-search input,
+#h3-root .h3-history-pager input,
+#h3-root .h3-history-detail-card textarea { border-radius:9px !important; }
+#h3-root .h3-section-index,
+#h3-root :is(.h3-page-mode,.h3-engine-chip,.h3-theme-button),
+#h3-root .h3-history-toolbar button,
+#h3-root .h3-history-pager button,
+#h3-root .h3-settings-card :is(input,select,.wrap,.wrap-inner) { border-radius:7px !important; }
+#h3-root :is(#wb-output-video,#wb-history-video,#wb-history-download,#h3-reference-image,#h3-first-frame,#h3-last-frame,#h3-reference-video,#h3-reference-audio) > label[data-testid="block-label"] {
+  border-radius:0 0 6px 0 !important;
+}
+#h3-root .h3-prompt-actions { align-items:center; justify-content:space-between; gap:10px !important; }
+#h3-root .h3-prompt-actions > div { flex:1 1 auto; min-width:140px; }
+#h3-root #h3-open-templates {
+  flex:0 0 auto; padding:8px 13px !important; min-height:34px !important;
+  border:1px solid var(--h3-control-border) !important;
+  background:rgba(95,120,183,.11) !important;
+  color:#b5c9ff !important;
+  font-size:11px !important; font-weight:730 !important;
+  border-radius:7px !important;
+  box-shadow:none !important;
+}
+#h3-root #h3-open-templates:hover {
+  color:#edf4ff !important;
+  background:rgba(108,137,217,.19) !important;
+  border-color:var(--h3-accent) !important;
+}
+
+/* Independent prompt template library. */
+#h3-root .h3-template-grid {
+  align-items:flex-start !important; gap:20px !important;
+  flex-wrap:wrap !important;
+}
+#h3-root .h3-template-browser,
+#h3-root .h3-template-composer { min-width:0 !important; gap:16px !important; }
+#h3-root .h3-template-explore,
+#h3-root .h3-template-preview-card { gap:15px !important; }
+#h3-root .h3-template-search-row {
+  align-items:center !important; gap:9px !important;
+}
+#h3-root .h3-template-search-row > div { min-width:0 !important; }
+#h3-root #h3-template-category,
+#h3-root #h3-template-query,
+#h3-root #h3-template-subject,
+#h3-root #h3-template-preview {
+  background:transparent !important;
+  border:0 !important; padding:0 !important;
+  box-shadow:none !important;
+}
+#h3-root :is(#h3-template-category,#h3-template-query,#h3-template-subject,#h3-template-preview) :is(input,textarea,.wrap,.wrap-inner) {
+  border:1px solid var(--h3-control-border) !important;
+  background:rgba(8,17,32,.5) !important;
+  color:var(--h3-ink) !important;
+  border-radius:9px !important;
+  box-shadow:none !important;
+}
+#h3-root :is(#h3-template-category,#h3-template-query,#h3-template-subject,#h3-template-preview) :is(input,textarea):focus {
+  border-color:var(--h3-accent) !important;
+  box-shadow:0 0 0 3px var(--h3-focus-ring) !important;
+  outline:0 !important;
+}
+#h3-root #h3-template-search {
+  padding:9px 15px !important;
+  border-radius:7px !important;
+  background:var(--h3-raised) !important;
+  border:1px solid var(--h3-control-border) !important;
+  color:var(--h3-ink) !important;
+  font-size:12px !important;
+  min-height:41px !important;
+  box-shadow:none !important;
+}
+#h3-root #h3-template-search:hover {
+  border-color:var(--h3-accent) !important;
+  background:var(--h3-surface-hover) !important;
+}
+#h3-root .h3-template-count { font-size:11px; color:var(--h3-muted); margin:0 !important; }
+#h3-root .h3-template-count p { margin:0 !important; color:var(--h3-muted) !important; font-size:11px; }
+#h3-root #h3-template-selector {
+  background:transparent !important; border:0 !important;
+  padding:0 !important; box-shadow:none !important;
+}
+#h3-root #h3-template-selector .wrap {
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:8px !important;
+}
+#h3-root #h3-template-selector label {
+  display:flex !important;
+  align-items:center !important;
+  background:rgba(8,17,32,.33) !important;
+  border:1px solid var(--h3-control-border) !important;
+  border-radius:9px !important;
+  padding:12px 13px !important;
+  color:var(--h3-ink) !important;
+  line-height:1.55 !important;
+  font-size:11.5px !important;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease;
+}
+#h3-root #h3-template-selector label:hover {
+  border-color:var(--h3-accent) !important;
+  background:var(--h3-surface-hover) !important;
+}
+#h3-root #h3-template-selector input[type=radio] { accent-color:var(--h3-accent) !important; flex:0 0 auto; }
+#h3-root #h3-template-selector label:has(input:checked) {
+  background:rgba(97,127,220,.15) !important;
+  border-color:rgba(128,156,247,.63) !important;
+  color:#e9efff !important;
+}
+#h3-root .h3-template-info {
+  background:rgba(106,137,233,.075) !important;
+  border:1px solid rgba(128,157,236,.16) !important;
+  padding:13px 15px !important;
+  border-radius:9px !important;
+  font-size:11.5px !important;
+  line-height:1.75 !important;
+}
+#h3-root .h3-template-info p { margin:0 !important; color:var(--h3-muted) !important; }
+#h3-root #h3-template-preview textarea {
+  min-height:235px !important;
+  font-size:12.5px !important; line-height:1.95 !important;
+  padding:16px !important;
+  resize:vertical !important;
+}
+#h3-root .h3-template-tip {
+  color:var(--h3-muted); font-size:11px;
+  line-height:1.8;
+}
+#h3-root #h3-template-apply {
+  min-height:49px !important;
+  border-radius:9px !important;
+  background:linear-gradient(110deg,#557be9,#7e93ff) !important;
+  color:#fff !important; font-size:13px !important; font-weight:740 !important;
+  border:1px solid rgba(162,187,255,.28) !important;
+  box-shadow:0 8px 24px rgba(66,95,196,.16) !important;
+}
+#h3-root #h3-template-apply:hover { filter:brightness(1.09); }
+#h3-root[data-h3-theme="light"] #h3-open-templates {
+  background:#eef3ff !important; color:#4b62b5 !important;
+}
+#h3-root[data-h3-theme="light"] :is(#h3-template-category,#h3-template-query,#h3-template-subject,#h3-template-preview) :is(input,textarea,.wrap,.wrap-inner) {
+  background:#f7faff !important; color:#263856 !important;
+}
+#h3-root[data-h3-theme="light"] #h3-template-selector label {
+  background:#f9fbff !important;
+  color:#293b5d !important;
+}
+#h3-root[data-h3-theme="light"] #h3-template-selector label:has(input:checked) {
+  background:#eaf0ff !important;
+  color:#374d9a !important;
+}
+#h3-root[data-h3-theme="light"] .h3-template-info { background:#f0f4fc !important; }
+@media(max-width:760px) {
+  #h3-root .h3-card { border-radius:14px !important; }
+  #h3-root .h3-template-grid { gap:15px !important; }
+  #h3-root .h3-prompt-actions { flex-wrap:wrap !important; }
+  #h3-root #h3-open-templates { width:100%; }
+}
+
+/* Final template-page density adjustment: no double labels or oversized search button. */
+#h3-root .h3-field-label {
+  color:var(--h3-label);
+  font-size:11.5px;
+  font-weight:710;
+  letter-spacing:.08px;
+  padding:1px 0 0;
+  margin:0 0 -7px;
+}
+#h3-root .h3-template-search-row {
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  gap:8px !important;
+  align-items:stretch !important;
+}
+#h3-root #h3-template-query {
+  flex:1 1 0 !important;
+  width:auto !important;
+  min-width:0 !important;
+}
+#h3-root #h3-template-search {
+  flex:0 0 78px !important;
+  width:78px !important;
+  min-width:78px !important;
+  max-width:78px !important;
+}
+#h3-root #h3-template-selector .wrap {
+  max-height:513px;
+  overflow-y:auto !important;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(113,137,186,.5) transparent;
+  padding-right:4px !important;
+  padding-bottom:1px !important;
+  gap:7px !important;
+}
+#h3-root #h3-template-selector label {
+  border-radius:7px !important;
+  padding:10px 11px !important;
+  font-size:11.5px !important;
+  line-height:1.5 !important;
+}
+#h3-root .h3-template-info {
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  color:var(--h3-muted) !important;
+  font-size:11.5px !important;
+  line-height:1.75 !important;
+}
+#h3-root .h3-template-info :is(p,strong) {
+  color:var(--h3-muted) !important;
+  font-size:11.5px !important;
+}
+#h3-root .h3-template-preview-card { gap:13px !important; }
+#h3-root .h3-template-explore { gap:13px !important; }
+#h3-root #h3-template-preview textarea {
+  min-height:205px !important;
+}
+#h3-root[data-h3-theme="light"] .h3-template-info {
+  background:transparent !important;
+  border:0 !important;
+}
+@media (max-width:760px) {
+  #h3-root #h3-template-selector .wrap { max-height:420px; }
+}
+
+/* Gradio 6 radio groups wrap into extra columns when given a max-height.
+   Keep a single full-width column and scroll vertically instead. */
+#h3-root .h3-template-explore .form {
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+}
+#h3-root #h3-template-selector {
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  overflow:hidden !important;
+}
+#h3-root #h3-template-selector > .wrap {
+  display:flex !important;
+  flex-direction:column !important;
+  flex-wrap:nowrap !important;
+  align-items:stretch !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  max-height:510px;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+#h3-root #h3-template-selector > .wrap > label {
+  flex:0 0 auto !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+}
+#h3-root #h3-template-selector > .wrap > label span {
+  min-width:0;
+  white-space:normal !important;
+  overflow-wrap:anywhere;
+}
 """
 
     workbench_js = r"""
@@ -966,6 +1255,10 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
     import logging
     import math
     from sglang.multimodal_gen.apps.webui.h3_studio_history import VideoHistory
+    from sglang.multimodal_gen.apps.webui.h3_studio_prompts import (
+        CATEGORIES, TEMPLATES, get_template, render_template, template_choices,
+        template_details,
+    )
 
     history_logger = logging.getLogger(__name__)
     history = VideoHistory(
@@ -1044,6 +1337,23 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
             details.append("\u8b66\u544a: \u5f55\u50cf\u6587\u4ef6\u4e0d\u5b58\u5728\uff0c\u65e0\u6cd5\u64ad\u653e\u6216\u4e0b\u8f7d")
         return path, path, "\n".join(details)
 
+    # Prompt template library is independent of the model and generation handler.
+    def templates_filter(category, keyword):
+        choices = template_choices(category, keyword)
+        selected = choices[0][1] if choices else None
+        item = get_template(selected)
+        subject = item["sample_subject"] if item else ""
+        return (
+            gr.update(choices=choices, value=selected),
+            subject, render_template(selected, subject),
+            template_details(selected), f"共找到 {len(choices)} 个模板",
+        )
+
+    def templates_pick(template_id):
+        item = get_template(template_id)
+        subject = item["sample_subject"] if item else ""
+        return subject, render_template(template_id, subject), template_details(template_id)
+
     # UI workbench vNext: native Gradio pages, no hidden anchor-only navigation.
     import inspect
 
@@ -1097,6 +1407,10 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                         "✦   视频创作", variant="primary",
                         elem_id="h3-nav-create", elem_classes=["h3-nav"],
                     )
+                    nav_templates = gr.Button(
+                        "▣   提示词模板", variant="secondary",
+                        elem_id="h3-nav-templates", elem_classes=["h3-nav"],
+                    )
                     nav_history = gr.Button(
                         "▤   生成记录", variant="secondary",
                         elem_id="h3-nav-history", elem_classes=["h3-nav"],
@@ -1144,10 +1458,15 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                         lines=4, max_lines=9, show_label=False,
                                         elem_id="h3-prompt",
                                     )
-                                    gr.HTML(
-                                        """<div class="h3-card-footnote">支持中文提示词，建议明确主体、运动和环境。</div>""",
-                                        elem_classes=["h3-html"],
-                                    )
+                                    with gr.Row(elem_classes=["h3-prompt-actions"]):
+                                        gr.HTML(
+                                            """<div class="h3-card-footnote">支持中文提示词，建议明确主体、运动和环境。</div>""",
+                                            elem_classes=["h3-html"],
+                                        )
+                                        open_templates_btn = gr.Button(
+                                            "浏览提示词模板", size="sm", variant="secondary",
+                                            elem_id="h3-open-templates", elem_classes=["h3-text-button"],
+                                        )
 
                                 with gr.Column(elem_classes=["h3-card", "h3-material-card"]):
                                     gr.HTML(
@@ -1253,7 +1572,98 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                     </div>""", elem_classes=["h3-html"],
                                 )
 
-                    # Page 2: the existing history callbacks are kept as-is.
+                    # Page 2: a dedicated, independently maintained prompt library.
+                    with gr.Column(visible=False, elem_id="h3-page-templates", elem_classes=["h3-page"]) as page_templates:
+                        gr.HTML(
+                            """<div class="h3-page-heading">
+                              <div><div class="h3-eyebrow">PROMPT LIBRARY / 灵感中心</div>
+                              <h1>提示词模板<span class="h3-title-dot">.</span></h1>
+                              <p>找到合适的镜头描述，替换主体并调整细节，然后直接用于视频创作。</p></div>
+                              <span class="h3-page-mode">12 个精选模板</span>
+                            </div>""",
+                            elem_classes=["h3-html"],
+                        )
+                        with gr.Row(elem_classes=["h3-template-grid"]):
+                            with gr.Column(scale=5, min_width=315, elem_classes=["h3-template-browser"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-template-explore"]):
+                                    gr.HTML(
+                                        """<div class="h3-section-head">
+                                          <div><span class="h3-section-index">01</span><strong>探索模板</strong></div>
+                                          <span class="h3-section-hint">BROWSE</span>
+                                        </div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-field-label">模板分类</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_category = gr.Dropdown(
+                                        choices=list(CATEGORIES), value="全部",
+                                        label="模板分类", show_label=False,
+                                        elem_id="h3-template-category",
+                                    )
+                                    with gr.Row(elem_classes=["h3-template-search-row"]):
+                                        template_query = gr.Textbox(
+                                            placeholder="搜索风格、运镜、场景...",
+                                            show_label=False, scale=4,
+                                            elem_id="h3-template-query",
+                                        )
+                                        template_search_btn = gr.Button(
+                                            "搜索", variant="secondary", size="sm",
+                                            elem_id="h3-template-search",
+                                        )
+                                    template_count = gr.Markdown(
+                                        "共找到 12 个模板", elem_classes=["h3-template-count"],
+                                    )
+                                    template_selector = gr.Radio(
+                                        choices=template_choices(),
+                                        value=TEMPLATES[0]["id"],
+                                        label="选择一个模板", show_label=False,
+                                        elem_id="h3-template-selector",
+                                    )
+                            with gr.Column(scale=7, min_width=345, elem_classes=["h3-template-composer"]):
+                                with gr.Column(elem_classes=["h3-card", "h3-template-preview-card"]):
+                                    gr.HTML(
+                                        """<div class="h3-section-head">
+                                          <div><span class="h3-section-index">02</span><strong>编辑并应用</strong></div>
+                                          <span class="h3-section-hint">COMPOSE</span>
+                                        </div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_info = gr.Markdown(
+                                        value=template_details(TEMPLATES[0]["id"]),
+                                        elem_classes=["h3-template-info"],
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-field-label">替换主体</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_subject = gr.Textbox(
+                                        value=TEMPLATES[0]["sample_subject"],
+                                        label="替换主体", show_label=False,
+                                        placeholder="例如：一只橘猫 / 一名旅行者 / 一款耳机",
+                                        elem_id="h3-template-subject",
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-field-label">可编辑提示词</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_preview = gr.Textbox(
+                                        value=render_template(TEMPLATES[0]["id"], TEMPLATES[0]["sample_subject"]),
+                                        label="可编辑提示词", show_label=False,
+                                        lines=9, max_lines=15,
+                                        elem_id="h3-template-preview",
+                                    )
+                                    gr.HTML(
+                                        """<div class="h3-template-tip">模板仅提供创作参考。可直接修改上面的描述；应用时不会自动开始生成。</div>""",
+                                        elem_classes=["h3-html"],
+                                    )
+                                    template_apply_btn = gr.Button(
+                                        "应用到视频创作", variant="primary",
+                                        elem_id="h3-template-apply",
+                                    )
+
+                    # Page 3: existing history callbacks are unchanged.
                     with gr.Column(visible=False, elem_id="h3-page-history", elem_classes=["h3-page"]) as page_history:
                         gr.HTML(
                             """<div class="h3-page-heading">
@@ -1311,7 +1721,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                                 lines=4, max_lines=8,
                             )
 
-                    # Page 3: a genuine separate help page, not a dead sidebar link.
+                    # Page 4: a genuine separate help page.
                     with gr.Column(visible=False, elem_id="h3-page-help", elem_classes=["h3-page"]) as page_help:
                         gr.HTML(
                             """<div class="h3-page-heading">
@@ -1322,7 +1732,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
                             <section class="h3-guide-grid">
                                 <article class="h3-guide-card"><div class="h3-guide-number">01</div>
                                   <h3>描述画面</h3>
-                                  <p>进入「视频创作」，输入主体、场景、动作、镜头运动和希望呈现的视觉风格。</p>
+                                  <p>进入「视频创作」输入完整描述，也可以从「提示词模板」选择风格、替换主体，再一键应用到创作区。</p>
                                 </article>
                                 <article class="h3-guide-card"><div class="h3-guide-number">02</div>
                                   <h3>准备素材与参数</h3>
@@ -1349,7 +1759,7 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
             )
 
         def navigate(page):
-            views = ("create", "history", "help")
+            views = ("create", "templates", "history", "help")
             pages = tuple(gr.update(visible=(page == key)) for key in views)
             navs = tuple(
                 gr.update(variant="primary" if page == key else "secondary")
@@ -1358,12 +1768,50 @@ html:has(#h3-root[data-h3-theme="light"]) .gradio-container {
             return pages + navs
 
         navigation_outputs = [
-            page_create, page_history, page_help,
-            nav_create, nav_history, nav_help,
+            page_create, page_templates, page_history, page_help,
+            nav_create, nav_templates, nav_history, nav_help,
         ]
         nav_create.click(fn=lambda: navigate("create"), outputs=navigation_outputs)
+        nav_templates.click(fn=lambda: navigate("templates"), outputs=navigation_outputs)
+        open_templates_btn.click(fn=lambda: navigate("templates"), outputs=navigation_outputs)
         nav_history.click(fn=lambda: navigate("history"), outputs=navigation_outputs)
         nav_help.click(fn=lambda: navigate("help"), outputs=navigation_outputs)
+
+        template_filter_outputs = [
+            template_selector, template_subject, template_preview,
+            template_info, template_count,
+        ]
+        template_category.change(
+            fn=templates_filter, inputs=[template_category, template_query],
+            outputs=template_filter_outputs,
+        )
+        template_search_btn.click(
+            fn=templates_filter, inputs=[template_category, template_query],
+            outputs=template_filter_outputs,
+        )
+        template_query.submit(
+            fn=templates_filter, inputs=[template_category, template_query],
+            outputs=template_filter_outputs,
+        )
+        template_selector.change(
+            fn=templates_pick, inputs=template_selector,
+            outputs=[template_subject, template_preview, template_info],
+        )
+        template_subject.change(
+            fn=render_template, inputs=[template_selector, template_subject],
+            outputs=template_preview,
+        )
+
+        def apply_selected_template(value):
+            text = (value or "").strip()
+            if not text:
+                raise gr.Error("请选择一个提示词模板并填写内容")
+            return (text, *navigate("create"))
+
+        template_apply_btn.click(
+            fn=apply_selected_template, inputs=template_preview,
+            outputs=[prompt, *navigation_outputs],
+        )
 
         upload_reference_image.change(
             fn=lambda enabled: gr.update(visible=bool(enabled), value=None),
