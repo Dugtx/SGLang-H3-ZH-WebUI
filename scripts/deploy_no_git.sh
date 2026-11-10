@@ -6,7 +6,7 @@ set -euo pipefail
 DEPLOY_DIR="/data/minimax-h3/deploy"
 UI_DIR="$DEPLOY_DIR/sglang-h3-zh-webui"
 ARCHIVE_URL="https://codeload.github.com/Dugtx/SGLang-H3-ZH-WebUI/tar.gz/refs/heads/main"
-RELEASE="v0.5.22-studio4.3"
+RELEASE="v0.5.22-studio4.4"
 
 for bin in curl tar python3 docker; do
   if ! command -v "$bin" >/dev/null 2>&1; then
@@ -44,13 +44,13 @@ echo "[2/5] 校验源码版本和完整性"
 (
   cd "$STAGE/source"
   python3 scripts/build_overlay.py
-  python3 -c 'import json; from pathlib import Path; m=json.loads(Path("manifest.json").read_text()); assert m["release"] == "v0.5.22-studio4.3", m["release"]; print("VERSION OK:", m["release"])'
+  python3 -c 'import json; from pathlib import Path; m=json.loads(Path("manifest.json").read_text()); assert m["release"] == "v0.5.22-studio4.4", m["release"]; print("VERSION OK:", m["release"])'
 )
 
 echo "[3/5] 更新部署目录"
 mkdir -p "$UI_DIR"
-if [ -f "$DEPLOY_DIR/compose.override.yaml" ] && [ ! -f "$DEPLOY_DIR/compose.override.yaml.bak-before-studio4.3" ]; then
-  /bin/cp -p "$DEPLOY_DIR/compose.override.yaml" "$DEPLOY_DIR/compose.override.yaml.bak-before-studio4.3"
+if [ -f "$DEPLOY_DIR/compose.override.yaml" ] && [ ! -f "$DEPLOY_DIR/compose.override.yaml.bak-before-studio4.4" ]; then
+  /bin/cp -p "$DEPLOY_DIR/compose.override.yaml" "$DEPLOY_DIR/compose.override.yaml.bak-before-studio4.4"
 fi
 /bin/cp -a "$STAGE/source/." "$UI_DIR/"
 /bin/cp -f "$UI_DIR/compose.override.yaml" "$DEPLOY_DIR/compose.override.yaml"

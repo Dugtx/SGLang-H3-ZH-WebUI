@@ -2,7 +2,7 @@
 
 这是在原有 **SGLang v0.5.22 MiniMax-H3 中文 Gradio WebUI** 上增加持久化生成记录的工作台。采用可切换的日间／夜间科技工作台布局，保留现有推理、任务、上传、输出与生成行为。
 
-## 本次 UI 设计（v0.5.22-studio4.3 · 正式界面）
+## 本次 UI 设计（v0.5.22-studio4.4 · 正式界面）
 
 - **学校品牌标识**：左上角改为“内蒙古民族幼儿师范视频模型”，浏览器标题同步更新。
 - **主题切换**：右上角日间／夜间模式按钮，实时更换背景、卡片、文本、上传控件等色彩，并在同一浏览器中记住选择。
@@ -35,7 +35,7 @@
 
 本次 **没有更改** `build_minimax_h3_sampling_params_kwargs`、`_generate_minimax_h3`、调度器请求、原生成回调 `generate` 的函数体、按钮提交参数与顺序、模型任务的来源和选择方式；生成按钮通过记录包装器调用原回调，除推理步数默认值调整外，也没有更改其他默认参数。`Ref2VA` 的“是否选择上传图片”开关、默认透明 PNG 回退和上传校验行为均保持原样。
 
-此项目仅覆盖 SGLang Python 包中的 WebUI 文件 `minimax_h3.py` 并新增标准库实现的 `h3_studio_history.py`，无需修改模型权重、端口、Compose 主文件、CUDA 内核或推理后端。
+此项目仅覆盖 SGLang Python 包中的 WebUI 文件 `minimax_h3.py` 并新增标准库实现的 `h3_studio_history.py` 和 `h3_studio_prompts.py`，无需修改模型权重、端口、Compose 主文件、CUDA 内核或推理后端。
 
 ## 下载后如何使用
 
@@ -50,7 +50,7 @@ curl -fL --retry 3 --connect-timeout 15 \
 bash /tmp/h3-deploy-no-git.sh
 ```
 
-部署脚本自动拉取 GitHub `main` 最新源码，核验 `v0.5.22-studio4.3`、重新生成覆盖文件和执行离线测试，随后构建并重建容器。后端与权重、Docker Compose 主文件、端口及 GPU 参数不改变。实际生成能力仍需在运行服务器上验收。
+部署脚本自动拉取 GitHub `main` 最新源码，核验 `v0.5.22-studio4.4`、重新生成覆盖文件后构建并重建容器。后端与权重、Docker Compose 主文件、端口及 GPU 参数不改变。实际生成能力仍需在运行服务器上验收。
 
 ### B. 使用本地 ZIP 解压源码部署（备用）
 

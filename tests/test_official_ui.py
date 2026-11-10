@@ -9,7 +9,7 @@ class ReleaseConsistencyTests(unittest.TestCase):
     def test_version_consistency_across_build_and_deploy(self):
         import json
         release = json.loads((ROOT / "manifest.json").read_text("utf-8"))["release"]
-        self.assertEqual(release, "v0.5.22-studio4.3")
+        self.assertEqual(release, "v0.5.22-studio4.4")
         for relative in ("Dockerfile", "compose.override.yaml", "scripts/deploy_no_git.sh"):
             self.assertIn(release, (ROOT / relative).read_text("utf-8"), relative)
         deploy = (ROOT / "scripts/deploy_no_git.sh").read_text("utf-8")

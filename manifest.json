@@ -10,5 +10,5 @@
   "prompt_templates_sha256": "884a4f7ad47fa807364d523c507c139f0cc74dafd5adc23340c59f61660e6049",
   "change_scope": "Studio V4.3: persistent output history (SQLite + MP4 browser) and unchanged SGLang inference core",
   "changes": 26,
-  "release": "v0.5.22-studio4.3"
+  "release": "v0.5.22-studio4.4"
 }

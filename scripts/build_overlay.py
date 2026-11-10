@@ -115,7 +115,7 @@ manifest = {
     "prompt_templates_sha256": hashlib.sha256((ROOT / "assets/prompt_templates.py").read_bytes()).hexdigest(),
     "change_scope": "Studio V4.3: persistent output history (SQLite + MP4 browser) and unchanged SGLang inference core",
     "changes": len(replacements) + len(extra_replacements) + 2,
-    "release": "v0.5.22-studio4.3",
+    "release": "v0.5.22-studio4.4",
 }
 (ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 print(json.dumps(manifest, ensure_ascii=False, indent=2))

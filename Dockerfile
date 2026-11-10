@@ -9,4 +9,4 @@ COPY scripts/apply_overlay.py /tmp/apply_overlay.py
 RUN python /tmp/apply_overlay.py
 
 LABEL org.opencontainers.image.title="SGLang MiniMax-H3 Studio Workbench" \
-      org.opencontainers.image.version="v0.5.22-studio4.3"
+      org.opencontainers.image.version="v0.5.22-studio4.4"
