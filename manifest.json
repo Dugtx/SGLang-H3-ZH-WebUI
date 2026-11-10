@@ -1,12 +1,12 @@
 {
-  "project": "SGLang MiniMax-H3 Simplified Chinese UI overlay",
+  "project": "内蒙古民族幼儿师范视频模型 - SGLang MiniMax-H3 workbench",
   "upstream_repo": "https://github.com/sgl-project/sglang",
   "upstream_tag": "v0.5.22",
   "upstream_commit": "35ce313293052f8362e0829e7512bc9bc3d336c9",
   "source_relative_path": "python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
   "upstream_sha256": "d140b465872a9f16f658b6dfc92e25e2a98306482b4c9cb6c31c7ebe6a8413a9",
-  "localized_sha256": "587276df6c7abc6b9b02857dd6b3fa16723a99be51a3d3b1b30ff41d3b896d33",
-  "change_scope": "H3 Chinese labels, hidden top controls, Ref2VA optional image with transparent fallback",
-  "changes": 24,
-  "release": "v0.5.22-zh4"
+  "localized_sha256": "34a4e9ffa637e371a203d2cae54777545b9ca9fd97bd2010b7b07307d0700ba5",
+  "change_scope": "Removed decorative System State card; inference slider UI default 50->2; model pipeline, callback and API unchanged",
+  "changes": 25,
+  "release": "v0.5.22-studio4.2"
 }

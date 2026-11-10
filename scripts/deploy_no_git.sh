@@ -6,7 +6,7 @@ set -euo pipefail
 DEPLOY_DIR="/data/minimax-h3/deploy"
 UI_DIR="$DEPLOY_DIR/sglang-h3-zh-webui"
 ARCHIVE_URL="https://codeload.github.com/Dugtx/SGLang-H3-ZH-WebUI/tar.gz/refs/heads/main"
-RELEASE="v0.5.22-zh4"
+RELEASE="v0.5.22-studio4.2"
 
 for bin in curl tar python3 docker; do
   if ! command -v "$bin" >/dev/null 2>&1; then
@@ -27,23 +27,31 @@ STAGE="$(mktemp -d /tmp/h3-webui-update.XXXXXX)"
 trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$STAGE/source"
 
-echo "[1/5] 下载 GitHub 最新源码（无需 Git）"
-curl -fL --retry 3 --retry-delay 2 --connect-timeout 15 \
-  "$ARCHIVE_URL" -o "$STAGE/repo.tar.gz"
-tar -xzf "$STAGE/repo.tar.gz" -C "$STAGE/source" --strip-components=1
+echo "[1/5] 准备源码（本地 ZIP 解压目录优先，兼容 GitHub 下载模式）"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_SOURCE="$(cd "$SCRIPT_DIR/.." && pwd)"
+if [ -f "$LOCAL_SOURCE/manifest.json" ] && [ -f "$LOCAL_SOURCE/assets/workbench.css" ]; then
+  echo "使用本地工作台源码: $LOCAL_SOURCE"
+  /bin/cp -a "$LOCAL_SOURCE/." "$STAGE/source/"
+else
+  echo "从 GitHub 获取源码: $ARCHIVE_URL"
+  curl -fL --retry 3 --retry-delay 2 --connect-timeout 15 \
+    "$ARCHIVE_URL" -o "$STAGE/repo.tar.gz"
+  tar -xzf "$STAGE/repo.tar.gz" -C "$STAGE/source" --strip-components=1
+fi
 
 echo "[2/5] 校验源码版本和完整性"
 (
   cd "$STAGE/source"
   python3 scripts/build_overlay.py
   python3 tests/test_localization.py
-  python3 -c 'import json; from pathlib import Path; m=json.loads(Path("manifest.json").read_text()); assert m["release"] == "v0.5.22-zh4", m["release"]; print("VERSION OK:", m["release"])'
+  python3 -c 'import json; from pathlib import Path; m=json.loads(Path("manifest.json").read_text()); assert m["release"] == "v0.5.22-studio4.2", m["release"]; print("VERSION OK:", m["release"])'
 )
 
 echo "[3/5] 更新部署目录"
 mkdir -p "$UI_DIR"
-if [ -f "$DEPLOY_DIR/compose.override.yaml" ] && [ ! -f "$DEPLOY_DIR/compose.override.yaml.bak-before-zh4" ]; then
-  /bin/cp -p "$DEPLOY_DIR/compose.override.yaml" "$DEPLOY_DIR/compose.override.yaml.bak-before-zh4"
+if [ -f "$DEPLOY_DIR/compose.override.yaml" ] && [ ! -f "$DEPLOY_DIR/compose.override.yaml.bak-before-studio4.2" ]; then
+  /bin/cp -p "$DEPLOY_DIR/compose.override.yaml" "$DEPLOY_DIR/compose.override.yaml.bak-before-studio4.2"
 fi
 /bin/cp -a "$STAGE/source/." "$UI_DIR/"
 /bin/cp -f "$UI_DIR/compose.override.yaml" "$DEPLOY_DIR/compose.override.yaml"

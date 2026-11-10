@@ -46,7 +46,8 @@ class LocalizationTests(unittest.TestCase):
 
     def test_reference_image_switch_and_fallback(self):
         self.assertIn('label="是否选择上传图片"', self.localized)
-        self.assertIn('value=False, visible="ref2va" in tasks', self.localized)
+        self.assertIn('value=False,', self.localized)
+        self.assertIn('visible="ref2va" in tasks', self.localized)
         self.assertIn('if task == "ref2va":', self.localized)
         self.assertIn('if use_uploaded_reference_image:', self.localized)
         self.assertIn('reference_image = transparent_reference', self.localized)
@@ -68,8 +69,8 @@ class LocalizationTests(unittest.TestCase):
             "短边分辨率", "画面比例", "视频流偏移", "音频流偏移",
         ]
         self.assertCountEqual(labels, expected)
-        self.assertIn('gr.Button("开始生成"', self.localized)
-        self.assertIn('gr.Markdown("# SGLang MiniMax H3")', self.localized)
+        self.assertIn('"开始生成", variant="primary"', self.localized)
+        self.assertIn('gr.Markdown("# 内蒙古民族幼儿师范视频模型", elem_classes=', self.localized)
         self.assertNotIn("**说明：**", self.localized)
         self.assertNotIn("当前仅为中文界面", self.localized)
         self.assertNotIn('SGLang MiniMax H3 · 中文版', self.localized)
@@ -80,6 +81,41 @@ class LocalizationTests(unittest.TestCase):
         def extract_imports(tree):
             return [ast.dump(n) for n in tree.body if isinstance(n, (ast.Import, ast.ImportFrom))]
         self.assertEqual(extract_imports(self.a), extract_imports(self.b))
+
+    def test_original_generate_callback_contract_unchanged(self):
+        ui = function(self.b, "run_minimax_h3_webui")
+        generate = next(x for x in ui.body if isinstance(x, ast.FunctionDef) and x.name == "generate")
+        callback_ast = ast.dump(generate, include_attributes=False).encode()
+        self.assertEqual(
+            hashlib.sha256(callback_ast).hexdigest(),
+            "de4cc2a5b52a9d60d27c8b107d58945752b2b87853a77b69c97c49d3e47be2e0",
+        )
+
+    def test_workbench_presentation_and_assets(self):
+        css = (ROOT / "assets/workbench.css").read_text(encoding="utf-8")
+        layout = (ROOT / "assets/workbench_layout.pyfrag").read_text(encoding="utf-8")
+        self.assertIn('"css": workbench_css', self.localized)
+        self.assertIn('"js": workbench_js', self.localized)
+        self.assertIn('style_in_launch = "css" not in inspect.signature(gr.Blocks).parameters', self.localized)
+        for ident in ("wb-root", "wb-app-shell", "wb-prompt-card", "wb-assets-card",
+                      "wb-settings-card", "wb-result-card", "wb-generate"):
+            self.assertIn(ident, self.localized)
+            self.assertIn(ident, css + layout)
+        self.assertIn(css.rstrip(), self.localized)
+        self.assertIn("内蒙古民族幼儿师范视频模型", self.localized)
+
+    def test_day_night_theme_browser_only(self):
+        js = (ROOT / "assets/workbench.js").read_text(encoding="utf-8")
+        css = (ROOT / "assets/workbench.css").read_text(encoding="utf-8")
+        layout = (ROOT / "assets/workbench_layout.pyfrag").read_text(encoding="utf-8")
+        self.assertIn('id="wb-theme-toggle"', layout)
+        self.assertIn('data-wb-theme', js)
+        self.assertIn('window.localStorage.setItem(storageKey, next)', js)
+        self.assertIn('document.addEventListener("click"', js)
+        self.assertIn('html[data-wb-theme="light"]', css)
+        self.assertIn(js.rstrip(), self.localized)
+        self.assertIn('title="内蒙古民族幼儿师范视频模型 | 视频创作工作台"', layout)
+        self.assertEqual(self.localized.count('run_btn.click('), 1)
 
     def test_critical_ui_bindings_intact(self):
         ui = function(self.b, "run_minimax_h3_webui")

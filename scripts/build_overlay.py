@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Generate a deterministic Chinese UI overlay for SGLang v0.5.22 MiniMax H3.
+"""Build the deterministic Chinese H3 Studio UI for pinned SGLang v0.5.22.
 
-Only visible Gradio UI strings, the top controls, without explanatory Markdown
-are changed. The selected model variant is retained internally as Gradio State.
-Inference, request construction and generation callbacks are unchanged.
+Only the Gradio visual layout, labels and styling are rebuilt. The selected
+model remains internal State; inference and request construction are unchanged.
 """
 from __future__ import annotations
 import difflib
@@ -76,6 +75,20 @@ for old, new in extra_replacements:
         raise SystemExit(f"FAIL: expected exactly 1 occurrence for {old!r}, found {count}")
     modified = modified.replace(old, new, 1)
 
+# The workbench templates are the source of truth.  Keep the generated
+# overlay self-contained: Docker only copies overlay/minimax_h3.py.
+css = (ROOT / "assets" / "workbench.css").read_text(encoding="utf-8")
+js = (ROOT / "assets" / "workbench.js").read_text(encoding="utf-8")
+layout = (ROOT / "assets" / "workbench_layout.pyfrag").read_text(encoding="utf-8")
+ui_start = '    with gr.Blocks(title="SGLang MiniMax H3") as demo:'
+if modified.count(ui_start) != 1:
+    raise SystemExit("FAIL: unexpected Gradio UI entrypoint")
+start = modified.index(ui_start)
+modified = (modified[:start]
+            + '    workbench_css = r"""\n' + css.rstrip() + '\n"""\n\n'
+            + '    workbench_js = r"""\n' + js.rstrip() + '\n"""\n\n'
+            + layout)
+
 DST.parent.mkdir(parents=True, exist_ok=True)
 PATCH.parent.mkdir(parents=True, exist_ok=True)
 DST.write_text(modified, encoding="utf-8")
@@ -86,16 +99,16 @@ PATCH.write_text("".join(difflib.unified_diff(
     tofile="b/python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
 )), encoding="utf-8")
 manifest = {
-    "project": "SGLang MiniMax-H3 Simplified Chinese UI overlay",
+    "project": "内蒙古民族幼儿师范视频模型 - SGLang MiniMax-H3 workbench",
     "upstream_repo": "https://github.com/sgl-project/sglang",
     "upstream_tag": "v0.5.22",
     "upstream_commit": "35ce313293052f8362e0829e7512bc9bc3d336c9",
     "source_relative_path": "python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
     "upstream_sha256": source_hash,
     "localized_sha256": hashlib.sha256(modified.encode("utf-8")).hexdigest(),
-    "change_scope": "H3 Chinese labels, hidden top controls, Ref2VA optional image with transparent fallback",
-    "changes": len(replacements) + len(extra_replacements),
-    "release": "v0.5.22-zh4",
+    "change_scope": "Removed decorative System State card; inference slider UI default 50->2; model pipeline, callback and API unchanged",
+    "changes": len(replacements) + len(extra_replacements) + 1,
+    "release": "v0.5.22-studio4.2",
 }
 (ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 print(json.dumps(manifest, ensure_ascii=False, indent=2))
