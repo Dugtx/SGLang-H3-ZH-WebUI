@@ -87,10 +87,14 @@ class LocalizationTests(unittest.TestCase):
     def test_original_generate_callback_contract_unchanged(self):
         ui = function(self.b, "run_minimax_h3_webui")
         generate = next(x for x in ui.body if isinstance(x, ast.FunctionDef) and x.name == "generate")
-        callback_ast = ast.dump(generate, include_attributes=False).encode()
+        # ast.dump() changes its field representation between Python versions.
+        # Hash the exact source segment instead, so identical callbacks pass
+        # on the openEuler host and on newer development interpreters.
+        callback_source = ast.get_source_segment(self.localized, generate)
+        self.assertIsNotNone(callback_source)
         self.assertEqual(
-            hashlib.sha256(callback_ast).hexdigest(),
-            "de4cc2a5b52a9d60d27c8b107d58945752b2b87853a77b69c97c49d3e47be2e0",
+            hashlib.sha256(callback_source.encode("utf-8")).hexdigest(),
+            "a6e1bfc6b37205b15a4f6c9e9c028288612c6bd856fa7d9c44d0c3dc6adde303",
         )
 
     def test_workbench_presentation_and_assets(self):
