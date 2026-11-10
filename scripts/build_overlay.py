@@ -5,6 +5,7 @@ Only the Gradio visual layout, labels and styling are rebuilt. The selected
 model remains internal State; inference and request construction are unchanged.
 """
 from __future__ import annotations
+import base64
 import difflib
 import hashlib
 import json
@@ -80,6 +81,10 @@ for old, new in extra_replacements:
 css = (ROOT / "assets" / "workbench.css").read_text(encoding="utf-8")
 js = (ROOT / "assets" / "workbench.js").read_text(encoding="utf-8")
 layout = (ROOT / "assets" / "workbench_layout.pyfrag").read_text(encoding="utf-8")
+logo = base64.b64encode((ROOT / "assets/nm_mascot_header.png").read_bytes()).decode("ascii")
+if layout.count("__H3_BRAND_LOGO__") != 1:
+    raise SystemExit("FAIL: missing logo marker")
+layout = layout.replace("__H3_BRAND_LOGO__", logo)
 ui_start = '    with gr.Blocks(title="SGLang MiniMax H3") as demo:'
 if modified.count(ui_start) != 1:
     raise SystemExit("FAIL: unexpected Gradio UI entrypoint")

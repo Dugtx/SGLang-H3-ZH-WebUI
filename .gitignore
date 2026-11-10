@@ -8,3 +8,5 @@ __pycache__/
 outputs/
 inputs/
 artifacts/
+
+.preview-data/
