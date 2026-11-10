@@ -43,7 +43,7 @@
          kwargs = build_minimax_h3_sampling_params_kwargs(
              prompt=prompt,
              task=task,
-@@ -209,53 +231,1280 @@
+@@ -209,55 +231,1444 @@
          )
          return _generate_minimax_h3(server_args, kwargs)
  
@@ -849,6 +849,21 @@
 +  #wb-root .wb-wait-orbit.orbit-b {inset:15px 25px;}
 +  #wb-root .wb-wait-orbit.orbit-c {inset:26px 36px;}
 +}
++
++
++/* V4.3 persistent history panel */
++#wb-root #wb-history-card { scroll-margin-top: 95px; }
++#wb-root .wb-history-panel { margin-top: 16px; }
++#wb-root .wb-history-toolbar { gap: 8px; align-items: end; }
++#wb-root .wb-history-pager { gap: 8px; align-items: center; }
++#wb-root .wb-history-pager button { flex: 0 0 auto; }
++#wb-root .wb-history-media { align-items: start; gap: 12px; }
++#wb-root #wb-history-table { max-height: 430px; overflow: auto; }
++#wb-root #wb-history-download { min-width: 140px; }
++@media (max-width: 900px) {
++  #wb-root .wb-history-toolbar, #wb-root .wb-history-media { flex-wrap: wrap; }
++  #wb-root .wb-history-toolbar > *, #wb-root .wb-history-media > * { min-width: 100% !important; }
++}
 +"""
 +
 +    workbench_js = r"""
@@ -1059,8 +1074,91 @@
 +}
 +"""
 +
-+    # Presentational skin only. The Gradio component values and callback wiring
-+    # below remain wired to the original SGLang MiniMax-H3 generation pipeline.
++    # V4.3: persistent browser for completed, failed, imported and interrupted videos.
++    from datetime import datetime
++    import logging
++    import math
++    from sglang.multimodal_gen.apps.webui.h3_studio_history import VideoHistory
++
++    history_logger = logging.getLogger(__name__)
++    history = VideoHistory(
++        output_dir=os.environ.get("H3_OUTPUTS_DIR", "/data/minimax-h3/outputs"),
++        database=os.environ.get("H3_HISTORY_DB", "/data/minimax-h3/history/history.sqlite3"),
++    )
++    try:
++        history.scan(force=True)
++    except Exception:
++        history_logger.exception("Initial H3 history scan failed")
++
++    def generate_with_history(*args):
++        # Keep generate() and the original SGLang inference pipeline unchanged.
++        job_id = history.create_job(
++            prompt=str(args[0]), task=str(args[1]), seed=int(args[8]),
++            steps=int(args[9]), duration_seconds=float(args[12]),
++        )
++        try:
++            path = generate(*args)
++        except Exception as exc:
++            history.fail_job(job_id, str(exc))
++            raise
++        try:
++            history.complete_job(job_id, path)
++        except Exception:
++            # A metadata failure must not hide an otherwise successful video.
++            history_logger.exception("H3 video generated but history metadata could not be saved")
++        return path
++
++    def history_page_data(page_number=0, search_text=""):
++        items, page_number, total = history.page(page_number, search_text)
++        status_labels = {
++            "completed": "\u5df2\u5b8c\u6210", "failed": "\u5931\u8d25",
++            "interrupted": "\u5df2\u4e2d\u65ad", "running": "\u751f\u6210\u4e2d",
++        }
++        rows = []
++        choices = []
++        for item in items:
++            timestamp = datetime.fromtimestamp(item["created_at"]).strftime("%Y-%m-%d %H:%M")
++            filename = item["file_name"] or "-"
++            size = f"{item['size_bytes'] / 1048576:.1f} MB" if item["size_bytes"] else "-"
++            label = status_labels.get(item["status"], item["status"])
++            src = "WebUI" if item["source"] == "webui" else "\u81ea\u52a8\u5bfc\u5165"
++            rows.append([timestamp, filename[:95], label, size, src, (item["prompt"] or "-")[:60]])
++            choices.append((f"{timestamp} | {label} | {filename[-65:]}", item["id"]))
++        pages = max(1, math.ceil(total / 10))
++        summary = f"\u7b2c {page_number + 1}/{pages} \u9875  |  \u5171 {total} \u6761\u8bb0\u5f55"
++        return (rows, gr.update(choices=choices, value=None), summary, page_number,
++                None, None, "")
++
++    def history_refresh(page_number, search_text, delta=0):
++        try:
++            history.scan(force=True)
++        except Exception:
++            history_logger.exception("H3 history refresh scan failed")
++        return history_page_data(max(0, int(page_number) + delta), search_text)
++
++    def history_select(item_id):
++        row = history.get(item_id)
++        if not row:
++            return None, None, ""
++        missing_prompt = "(\u5386\u53f2\u6587\u4ef6\u65e0\u5143\u6570\u636e)"
++        details = [
++            f"ID: {row['id']}",
++            f"\u72b6\u6001: {row['status']}",
++            f"\u6765\u6e90: {row['source']}",
++            f"\u521b\u5efa\u65f6\u95f4: {datetime.fromtimestamp(row['created_at']).strftime('%Y-%m-%d %H:%M:%S')}",
++            f"\u4efb\u52a1: {row['task'] or '-'} | Seed: {row['seed'] if row['seed'] is not None else '-'} | Steps: {row['steps'] if row['steps'] is not None else '-'}",
++            f"\u65f6\u957f: {row['duration_seconds'] if row['duration_seconds'] is not None else '-'} s",
++            f"\u63d0\u793a\u8bcd: {row['prompt'] or missing_prompt}",
++        ]
++        if row.get("error"):
++            details.append("Error: " + row["error"])
++        path = history.video_path(item_id)
++        if row["status"] == "completed" and not path:
++            details.append("\u8b66\u544a: \u5f55\u50cf\u6587\u4ef6\u4e0d\u5b58\u5728\uff0c\u65e0\u6cd5\u64ad\u653e\u6216\u4e0b\u8f7d")
++        return path, path, "\n".join(details)
++
++    # Keep the original model-side generation function unchanged;
++    # the UI-only history wrapper records metadata and the output path.
 +    import inspect
 +
 +    workbench_theme = gr.themes.Base(
@@ -1123,6 +1221,7 @@
 +                            <a href="#wb-assets-card" class="wb-side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8" cy="9" r="2"/><path d="m21 16-5-5L4 20"/></svg>素材与关键帧</a>
 +                            <a href="#wb-settings-card" class="wb-side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="#10192b"/><circle cx="15" cy="17" r="3" fill="#10192b"/></svg>生成参数</a>
 +                            <a href="#wb-result-card" class="wb-side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z"/></svg>成片预览</a>
++                            <a href="#wb-history-card" class="wb-side-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>生成记录</a>
 +                          </nav>
 +                          <div class="wb-side-divider"></div>
 +                          <div class="wb-side-label" style="padding-bottom:8px">CREATIVE KIT</div>
@@ -1336,6 +1435,46 @@
 +                              <div class="wb-microcopy">创作流程提示仅用于界面引导，实际生成仍由当前 SGLang 推理服务执行。</div>''',
 +                            elem_classes=["wb-html"],
 +                        )
++                    with gr.Group(elem_id="wb-history-card", elem_classes=["wb-panel", "wb-history-panel"]):
++                        gr.HTML(
++                            "<div class='wb-section-head'><div class='wb-section-label'>\u751f\u6210\u8bb0\u5f55</div>"
++                            "<span class='wb-section-extra'>HISTORY / MP4</span></div>"
++                            "<div class='wb-panel-help'>\u67e5\u770b\u3001\u64ad\u653e\u548c\u4e0b\u8f7d\u5df2\u4fdd\u5b58\u7684\u539f\u59cb\u89c6\u9891\uff1b\u65e7\u6587\u4ef6\u4f1a\u81ea\u52a8\u7d22\u5f15\u3002</div>",
++                            elem_classes=["wb-html"],
++                        )
++                        history_page_state = gr.State(0)
++                        with gr.Row(elem_classes=["wb-history-toolbar"]):
++                            history_search = gr.Textbox(
++                                label="\u641c\u7d22\u6587\u4ef6\u540d\u6216\u63d0\u793a\u8bcd", placeholder="MP4 / Prompt",
++                                elem_id="wb-history-search", scale=3,
++                            )
++                            history_search_btn = gr.Button("\u641c\u7d22", scale=1, variant="secondary")
++                            history_refresh_btn = gr.Button("\u5237\u65b0\u8bb0\u5f55", scale=1)
++                        history_table = gr.Dataframe(
++                            headers=["\u751f\u6210\u65f6\u95f4", "\u6587\u4ef6", "\u72b6\u6001", "\u5927\u5c0f", "\u6765\u6e90", "\u63d0\u793a\u8bcd"],
++                            datatype=["str"] * 6, interactive=False, wrap=True,
++                            elem_id="wb-history-table",
++                        )
++                        with gr.Row(elem_classes=["wb-history-pager"]):
++                            history_prev_btn = gr.Button("\u4e0a\u4e00\u9875", size="sm")
++                            history_page_text = gr.Textbox(value="", show_label=False, interactive=False, scale=3)
++                            history_next_btn = gr.Button("\u4e0b\u4e00\u9875", size="sm")
++                        history_selector = gr.Dropdown(
++                            label="\u9009\u62e9\u8981\u67e5\u770b\u7684\u8bb0\u5f55", choices=[], value=None,
++                            elem_id="wb-history-select",
++                        )
++                        with gr.Row(elem_classes=["wb-history-media"]):
++                            history_video = gr.Video(
++                                label="\u5386\u53f2\u89c6\u9891\u9884\u89c8", include_audio=True,
++                                height=240, elem_id="wb-history-video",
++                            )
++                            history_download = gr.File(
++                                label="\u4e0b\u8f7d\u539f\u59cb MP4", elem_id="wb-history-download",
++                            )
++                        history_detail = gr.Textbox(
++                            label="\u4efb\u52a1\u8be6\u60c5", interactive=False,
++                            lines=4, max_lines=8,
++                        )
 +            gr.HTML(
 +                '''<div class="wb-footer"><span>© 内蒙古民族幼儿师范视频模型 · 视频创作工作台</span><span><strong>Powered by MiniMax H3</strong> &nbsp; / &nbsp; UI WORKBENCH</span></div>''',
 +                elem_classes=["wb-html"],
@@ -1359,6 +1498,8 @@
 -            )
 -
 -        run_btn = gr.Button("Generate", variant="primary")
+-        run_btn.click(
+-            fn=generate,
 +
 +        # Preserve the existing Ref2VA selection and the same callback contract.
 +        upload_reference_image.change(
@@ -1366,10 +1507,35 @@
 +            inputs=upload_reference_image,
 +            outputs=reference_image,
 +        )
-         run_btn.click(
-             fn=generate,
++        history_outputs = [history_table, history_selector, history_page_text,
++                           history_page_state, history_video, history_download, history_detail]
++        demo.load(fn=lambda: history_refresh(0, ""), outputs=history_outputs)
++        history_refresh_btn.click(
++            fn=lambda page, query: history_refresh(page, query),
++            inputs=[history_page_state, history_search], outputs=history_outputs,
++        )
++        history_search_btn.click(
++            fn=lambda query: history_refresh(0, query),
++            inputs=history_search, outputs=history_outputs,
++        )
++        history_prev_btn.click(
++            fn=lambda page, query: history_refresh(page, query, -1),
++            inputs=[history_page_state, history_search], outputs=history_outputs,
++        )
++        history_next_btn.click(
++            fn=lambda page, query: history_refresh(page, query, 1),
++            inputs=[history_page_state, history_search], outputs=history_outputs,
++        )
++        history_selector.change(
++            fn=history_select, inputs=history_selector,
++            outputs=[history_video, history_download, history_detail],
++        )
++        generate_event = run_btn.click(
++            fn=generate_with_history,
              inputs=[
-@@ -266,6 +1515,7 @@
+                 prompt,
+                 task,
+@@ -266,6 +1677,7 @@
                  reference_image,
                  reference_video,
                  reference_audio,
@@ -1377,10 +1543,21 @@
                  seed,
                  num_inference_steps,
                  short_edge,
-@@ -282,6 +1532,7 @@
+@@ -276,12 +1688,18 @@
+             ],
+             outputs=video_out,
+         )
++        generate_event.success(
++            fn=lambda page, query: history_refresh(page, query),
++            inputs=[history_page_state, history_search], outputs=history_outputs,
++        )
+ 
+         _, local_url, _ = demo.launch(
+             server_port=server_args.webui_port,
              quiet=True,
              prevent_thread_lock=True,
              show_error=True,
++            allowed_paths=[str(history.output_dir)],
 +            **(style_kwargs if style_in_launch else {}),
          )
          url = local_url or f"http://localhost:{server_args.webui_port}"

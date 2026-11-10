@@ -65,6 +65,8 @@ class LocalizationTests(unittest.TestCase):
         expected = [
             "提示词（可输入中文）", "首帧关键帧",
             "尾帧关键帧", "参考图片", "是否选择上传图片", "参考视频", "参考音频",
+            "\u641c\u7d22\u6587\u4ef6\u540d\u6216\u63d0\u793a\u8bcd", "\u9009\u62e9\u8981\u67e5\u770b\u7684\u8bb0\u5f55",
+            "\u5386\u53f2\u89c6\u9891\u9884\u89c8", "\u4e0b\u8f7d\u539f\u59cb MP4", "\u4efb\u52a1\u8be6\u60c5",
             "生成结果（含音频）", "随机种子", "推理步数", "生成时长（秒）",
             "短边分辨率", "画面比例", "视频流偏移", "音频流偏移",
         ]
@@ -122,10 +124,16 @@ class LocalizationTests(unittest.TestCase):
         def clicked(tree):
             return [ast.dump(x) for x in ast.walk(tree) if isinstance(x, ast.Call)
                     and isinstance(x.func, ast.Attribute) and x.func.attr == "click"]
-        self.assertEqual(len(clicked(ui)), 1)
+        run_clicks = [x for x in ast.walk(ui) if isinstance(x, ast.Call)
+                      and isinstance(x.func, ast.Attribute)
+                      and isinstance(x.func.value, ast.Name)
+                      and x.func.value.id == "run_btn" and x.func.attr == "click"]
+        self.assertEqual(len(run_clicks), 1)
         self.assertIn('upload_reference_image.change(', self.localized)
         self.assertIn('upload_reference_image,\n                seed,', self.localized)
-        self.assertIn('fn=generate,', self.localized)
+        self.assertIn('fn=generate_with_history,', self.localized)
+        self.assertIn('allowed_paths=[str(history.output_dir)]', self.localized)
+        self.assertIn('fn=generate_with_history,', self.localized)
         self.assertIn('outputs=video_out,', self.localized)
         self.assertIn('task = gr.State(value=tasks[0])', self.localized)
         self.assertNotIn('task = gr.Dropdown(', self.localized)

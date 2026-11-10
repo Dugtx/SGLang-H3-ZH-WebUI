@@ -1,6 +1,6 @@
 services:
   sglang-h3:
-    image: local/sglang-h3-zh:v0.5.22-studio4.2
+    image: local/sglang-h3-zh:v0.5.22-studio4.3
     build:
       context: ./sglang-h3-zh-webui
       dockerfile: Dockerfile

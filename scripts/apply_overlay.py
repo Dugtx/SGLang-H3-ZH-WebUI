@@ -19,3 +19,11 @@ if hashlib.sha256(localized.read_bytes()).hexdigest() != manifest["localized_sha
     raise SystemExit("Chinese overlay SHA256 mismatch")
 path.write_bytes(localized.read_bytes())
 print(f"Chinese UI installed: {path}")
+
+# Install the isolated, stdlib-only history module after validating its checksum.
+history_source = Path("/tmp/h3_studio_history.py")
+if hashlib.sha256(history_source.read_bytes()).hexdigest() != manifest["history_sha256"]:
+    raise SystemExit("H3 history module SHA256 mismatch")
+history_destination = pkg / "multimodal_gen/apps/webui/h3_studio_history.py"
+history_destination.write_bytes(history_source.read_bytes())
+print(f"H3 Studio history installed: {history_destination}")

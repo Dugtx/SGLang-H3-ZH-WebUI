@@ -5,8 +5,9 @@
   "upstream_commit": "35ce313293052f8362e0829e7512bc9bc3d336c9",
   "source_relative_path": "python/sglang/multimodal_gen/apps/webui/minimax_h3.py",
   "upstream_sha256": "d140b465872a9f16f658b6dfc92e25e2a98306482b4c9cb6c31c7ebe6a8413a9",
-  "localized_sha256": "34a4e9ffa637e371a203d2cae54777545b9ca9fd97bd2010b7b07307d0700ba5",
-  "change_scope": "Removed decorative System State card; inference slider UI default 50->2; model pipeline, callback and API unchanged",
-  "changes": 25,
-  "release": "v0.5.22-studio4.2"
+  "localized_sha256": "6fedebc63feda5360484202a7b37fb19847a887d8d919826fa8425ae15587bd5",
+  "history_sha256": "3cf91b7ebd711b2009323668187fe996028ed5d119c0b71c6a86723def784bca",
+  "change_scope": "Studio V4.3: persistent output history (SQLite + MP4 browser) and unchanged SGLang inference core",
+  "changes": 26,
+  "release": "v0.5.22-studio4.3"
 }

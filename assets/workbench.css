@@ -779,3 +779,18 @@ html[data-wb-theme="light"] #wb-root .wb-wait-disclaimer {color:#96a4bd;}
   #wb-root .wb-wait-orbit.orbit-b {inset:15px 25px;}
   #wb-root .wb-wait-orbit.orbit-c {inset:26px 36px;}
 }
+
+
+/* V4.3 persistent history panel */
+#wb-root #wb-history-card { scroll-margin-top: 95px; }
+#wb-root .wb-history-panel { margin-top: 16px; }
+#wb-root .wb-history-toolbar { gap: 8px; align-items: end; }
+#wb-root .wb-history-pager { gap: 8px; align-items: center; }
+#wb-root .wb-history-pager button { flex: 0 0 auto; }
+#wb-root .wb-history-media { align-items: start; gap: 12px; }
+#wb-root #wb-history-table { max-height: 430px; overflow: auto; }
+#wb-root #wb-history-download { min-width: 140px; }
+@media (max-width: 900px) {
+  #wb-root .wb-history-toolbar, #wb-root .wb-history-media { flex-wrap: wrap; }
+  #wb-root .wb-history-toolbar > *, #wb-root .wb-history-media > * { min-width: 100% !important; }
+}

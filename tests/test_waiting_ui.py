@@ -30,7 +30,7 @@ class WaitingUITests(unittest.TestCase):
     def test_overlay_does_not_change_inputs(self):
         tree=ast.parse((ROOT / 'overlay/minimax_h3.py').read_text('utf-8'))
         ui=next(x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name=='run_minimax_h3_webui')
-        calls=[x for x in ast.walk(ui) if isinstance(x,ast.Call) and isinstance(x.func,ast.Attribute) and x.func.attr=='click']
+        calls=[x for x in ast.walk(ui) if isinstance(x,ast.Call) and isinstance(x.func,ast.Attribute) and isinstance(x.func.value,ast.Name) and x.func.value.id=='run_btn' and x.func.attr=='click']
         self.assertEqual(len(calls),1)
         click=calls[0]
         args={kw.arg:kw.value for kw in click.keywords}
